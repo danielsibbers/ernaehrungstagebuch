@@ -161,6 +161,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <span>Pizza 900 kcal</span>
       <span>Müsli Standard</span>
     </div>
+  <div id="tokenSetup" style="display:none;margin-top:12px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">🔑 Einmalige Einrichtung: GitHub Token eingeben für geräteübergreifende Synchronisation</div>
+    <div style="display:flex;gap:8px">
+      <input type="password" id="tokenInput" placeholder="ghp_..." style="flex:1;font-family:'DM Sans',sans-serif;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;background:white;color:var(--text)">
+      <button onclick="saveToken()" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:8px 16px;cursor:pointer">Speichern</button>
+    </div>
+  </div>
   </div>
 
   <div class="section-title">Einträge nach Tagen</div>
@@ -171,19 +178,30 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 <script>
 const GOAL_KCAL = 2000, GOAL_KH = 300;
 const LS_KEY = 'ernaehrungstagebuch_v1';
+const TOKEN_KEY = 'gh_token';
+const DB_URL = 'https://raw.githubusercontent.com/danielsibbers/ernaehrungstagebuch/main/datenbank.json';
+const ENTRIES_URL = 'https://raw.githubusercontent.com/danielsibbers/ernaehrungstagebuch/main/eintraege.json';
+const GH_API = 'https://api.github.com/repos/danielsibbers/ernaehrungstagebuch/contents/eintraege.json';
+let GH_TOKEN = localStorage.getItem(TOKEN_KEY) || '';
+let ghFileSha = null;
 
-const STD = {
+// Fallback-Datenbank (wird genutzt wenn GitHub nicht erreichbar)
+let STD = {
   'standardmüsli': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
-  'müsli (standard)': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
-  'müsli standard': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
-  'standard müsli': { label: 'Standardmüsli', k: 380, kh: 45 },
-  'rote bete salat': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 },
-  'rote-bete-salat': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 },
-  'rote bete': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 }
+  'müsli (standard)': { label: 'Standardmüsli', k: 380, kh: 45 },
+  'müsli standard': { label: 'Standardmüsli', k: 380, kh: 45 },
+  'rote bete salat': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, Olivenöl)', k: 450, kh: 27 },
+  'rote bete': { label: 'Rote-Bete-Salat', k: 450, kh: 27 }
 };
 
-const FOOD = [
-  ['halbe pizza margherita',400,48],['halbe pizza salami',525,43],['halbe pizza funghi',435,46],
+let FOOD = [
+  ['marzipan niederegger',65,8],['niederegger marzipan',65,8],['marzipan',65,8],
+  ['maultaschen gebraten',500,45],['gebratene maultaschen',500,45],['maultaschen',380,42],
+  ['duo eis',120,18],['sorbet klein',120,18],['sorbet',150,22],
+  ['indisches restaurant',700,65],['indisch',700,65],
+  ['burrata',396,2],['½ burrata',200,1],['halbe burrata',200,1],
+  ['lakritzschnecke',41,9],['lakritzschnecken',82,18],['lakritz',330,74],
+  ['rinderfilet mit beilagen',730,44],['rinderfilet mit kartoffeln',730,44],['rinderfilet',275,0],
   ['halbe pizza rucola',460,43],['halbe pizza',450,44],
   ['pizza margherita',800,95],['pizza salami',1050,85],['pizza funghi',870,92],
   ['pizza rucola',920,85],['pizza speck kartoffeln',1080,100],['pizza mista',1100,90],['pizza',900,90],
@@ -271,8 +289,8 @@ const FOOD = [
   ['lammkoteletts',360,0],['hähnchenkeule',320,0],['hähnchenbrust',165,0],
 ];
 
-const DRINKS = [
-  { p: ['alkoholfreies bier'], k: 20, kh: 4.5, v: 500 },
+let DRINKS = [
+  {p:['alkoholfreies bier','afbier'],k:20,kh:4.5,v:500},
   { p: ['bier', 'pils', 'weizen', 'weissbier', 'märzen'], k: 43, kh: 3.1, v: 500 },
   { p: ['weißwein', 'weisswein', 'riesling', 'chardonnay'], k: 82, kh: 2.6, v: 150 },
   { p: ['rotwein', 'spätburgunder', 'merlot', 'cabernet'], k: 85, kh: 2.3, v: 150 },
@@ -311,7 +329,8 @@ const DRINKS = [
   { p: ['kaffee', 'coffee'], k: 2, kh: 0.2, v: 200 },
   { p: ['grüntee', 'schwarztee', 'kräutertee', 'früchtetee', 'tee', 'tea'], k: 1, kh: 0.1, v: 250 },
   { p: ['orangensaft', 'o-saft'], k: 45, kh: 10.4, v: 200 },
-  { p: ['apfelsaft'], k: 46, kh: 11.2, v: 200 },
+  {p:['apfelschorle'],k:23,kh:5.6,v:330},
+  {p:['apfelsaft'],k:46,kh:11.2,v:200},
   { p: ['traubensaft'], k: 60, kh: 14.8, v: 200 },
   { p: ['cola zero', 'coke zero', 'cola light', 'pepsi light'], k: 0, kh: 0, v: 330 },
   { p: ['coca cola', 'cola', 'coke', 'pepsi'], k: 42, kh: 10.6, v: 330 },
@@ -542,23 +561,113 @@ const HISTORICAL_ENTRIES = [
   {id:45,date:'28.04.2026',time:'20:00',label:'½ Burrata',k:200,kh:1,min:0,burned:0},
   {id:46,date:'28.04.2026',time:'20:00',label:'Antipasti klein',k:200,kh:6,min:0,burned:0},
   {id:47,date:'28.04.2026',time:'21:00',label:'Rinderfilet mit Beilagen',k:730,kh:44,min:0,burned:0},
+  {id:48,date:'29.04.2026',time:'07:00',label:'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)',k:380,kh:45,min:0,burned:0},
+  {id:49,date:'29.04.2026',time:'08:00',label:'Fahrrad 30 min',k:0,kh:0,min:30,burned:240},
+  {id:50,date:'29.04.2026',time:'13:00',label:'Indisch Annapurna',k:700,kh:65,min:0,burned:0},
+  {id:51,date:'29.04.2026',time:'15:30',label:'Fahrrad 30 min',k:0,kh:0,min:30,burned:240},
+  {id:52,date:'29.04.2026',time:'16:45',label:'Apfelschorle 0,33l',k:76,kh:18.5,min:0,burned:0},
+  {id:53,date:'29.04.2026',time:'17:00',label:'Duo Eis Sorbet klein',k:120,kh:18,min:0,burned:0},
+  {id:54,date:'29.04.2026',time:'18:30',label:'2 Brötchen belegt',k:400,kh:76,min:0,burned:0},
+  {id:55,date:'29.04.2026',time:'19:00',label:'Spiegelei',k:90,kh:1,min:0,burned:0},
+  {id:56,date:'30.04.2026',time:'06:30',label:'½ Apfel',k:40,kh:10,min:0,burned:0},
+  {id:57,date:'30.04.2026',time:'07:00',label:'Krafttraining 45min',k:0,kh:0,min:45,burned:423},
+  {id:58,date:'30.04.2026',time:'08:30',label:'Fahrrad 30 min',k:0,kh:0,min:30,burned:240},
+  {id:59,date:'30.04.2026',time:'10:00',label:'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)',k:380,kh:45,min:0,burned:0},
+  {id:60,date:'30.04.2026',time:'13:30',label:'Salat Standard',k:280,kh:18,min:0,burned:0},
+  {id:61,date:'02.05.2026',time:'18:00',label:'Bier alkoholfrei 0,5l',k:100,kh:22.5,min:0,burned:0},
+  {id:62,date:'03.05.2026',time:'07:00',label:'Laufen 9km',k:0,kh:0,min:54,burned:657},
+  {id:63,date:'03.05.2026',time:'10:00',label:'2 Brötchen belegt',k:400,kh:76,min:0,burned:0},
+  {id:64,date:'03.05.2026',time:'13:54',label:'Bier alkoholfrei 0,3l',k:60,kh:13.5,min:0,burned:0},
+  {id:65,date:'03.05.2026',time:'15:00',label:'Kuchen (Stück)',k:350,kh:45,min:0,burned:0},
+  {id:66,date:'03.05.2026',time:'18:00',label:'Gebratene Maultaschen mit Ei',k:500,kh:45,min:0,burned:0},
+  {id:67,date:'03.05.2026',time:'20:00',label:'Rotwein',k:128,kh:3.5,min:0,burned:0},
+  {id:68,date:'04.05.2026',time:'07:00',label:'Apfel',k:80,kh:20,min:0,burned:0},
+  {id:69,date:'04.05.2026',time:'10:00',label:'Marzipan Niederegger',k:65,kh:8,min:0,burned:0},
 ];
 
 let entries = [];
-function loadEntries() {
+
+async function loadEntries() {
+  try {
+    // Versuche zuerst von GitHub zu laden
+    const res = await fetch(ENTRIES_URL + '?t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        entries = data;
+        // Auch lokal speichern als Fallback
+        try { localStorage.setItem(LS_KEY, JSON.stringify(entries)); } catch(e) {}
+        // SHA für späteres Update holen
+        const apiRes = await fetch(GH_API, {
+          headers: { 'Authorization': 'token ' + GH_TOKEN }
+        });
+        if (apiRes.ok) {
+          const apiData = await apiRes.json();
+          ghFileSha = apiData.sha;
+        }
+        return;
+      }
+    }
+  } catch(e) {}
+  // Fallback: localStorage
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) {
-      entries = JSON.parse(raw);
+      const stored = JSON.parse(raw);
+      entries = stored.length > 0 ? stored : HISTORICAL_ENTRIES;
     } else {
-      // Erster Start: historische Einträge laden
       entries = HISTORICAL_ENTRIES;
-      localStorage.setItem(LS_KEY, JSON.stringify(entries));
     }
+    // Historische Einträge ergänzen falls fehlend
+    const storedIds = new Set(entries.map(e => e.id));
+    const missing = HISTORICAL_ENTRIES.filter(e => !storedIds.has(e.id));
+    if (missing.length > 0) entries = [...entries, ...missing];
   } catch(e) { entries = HISTORICAL_ENTRIES; }
 }
-function saveEntries() {
+
+async function saveEntries() {
+  // Immer lokal speichern
   try { localStorage.setItem(LS_KEY, JSON.stringify(entries)); } catch(e) {}
+  // Auf GitHub speichern
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2))));
+    const body = {
+      message: 'Einträge aktualisiert ' + new Date().toLocaleDateString('de-DE'),
+      content: content,
+      ...(ghFileSha ? { sha: ghFileSha } : {})
+    };
+    const res = await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + GH_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      ghFileSha = data.content.sha;
+      // Sync-Status anzeigen
+      showSyncStatus('✓ Gespeichert');
+    } else {
+      showSyncStatus('⚠ Nur lokal gespeichert');
+    }
+  } catch(e) {
+    showSyncStatus('⚠ Nur lokal gespeichert');
+  }
+}
+
+function showSyncStatus(msg) {
+  let el = document.getElementById('syncStatus');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'syncStatus';
+    el.style.cssText = 'font-size:11px;color:var(--muted);margin-top:6px;transition:opacity 2s';
+    document.querySelector('.input-card').appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 3000);
 }
 loadEntries();
 
@@ -742,8 +851,45 @@ di.addEventListener('change', function () {
 });
 document.getElementById('mainIn').addEventListener('keydown', e => { if (e.key === 'Enter') addEntry(); });
 document.getElementById('headerDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-loadEntries();
-render();
+
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t) return;
+  GH_TOKEN = t;
+  localStorage.setItem(TOKEN_KEY, t);
+  document.getElementById('tokenSetup').style.display = 'none';
+  showSyncStatus('✓ Token gespeichert');
+}
+
+// Alles laden und dann rendern
+(async () => {
+  if (!GH_TOKEN) {
+    document.getElementById('tokenSetup').style.display = 'block';
+  }
+  await loadEntries();
+  await loadDatabaseFromGitHub();
+  render();
+})();
+async function loadDatabaseFromGitHub() {
+  try {
+    const res = await fetch(DB_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const db = await res.json();
+    if (db.std) STD = db.std;
+    if (db.food) FOOD = db.food;
+    if (db.drinks) DRINKS = db.drinks;
+    // Versionsdatum anzeigen
+    if (db.updated) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'font-size:11px;color:var(--muted);margin-top:6px';
+      hint.textContent = '✓ Datenbank aktuell (Stand: ' + db.updated + ')';
+      document.querySelector('.input-card').appendChild(hint);
+    }
+  } catch(e) {
+    // Fallback: eingebaute Datenbank wird weitergenutzt, kein Fehler anzeigen
+    console.log('Datenbank-Update nicht verfügbar, nutze eingebaute Version');
+  }
+}
 </script>
 </body>
 </html>
