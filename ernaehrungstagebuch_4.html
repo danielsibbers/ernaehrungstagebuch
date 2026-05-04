@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ernährungstagebuch</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e8e3da;
+  --text: #1a1714;
+  --muted: #8a8278;
+  --accent: #2d5a3d;
+  --accent-light: #edf4f0;
+  --accent2: #c4813a;
+  --accent2-light: #fdf4ea;
+  --danger: #b84040;
+  --danger-light: #fdf0f0;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.5; }
+
+/* Layout */
+.page { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* Header */
+.header { margin-bottom: 32px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.header-left h1 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; font-weight: 400; color: var(--text); line-height: 1.1; }
+.header-left h1 em { font-style: italic; color: var(--accent); }
+.header-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.export-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 20px; padding: 7px 16px; cursor: pointer; transition: all .2s; }
+.export-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.stat-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-family: 'DM Serif Display', serif; font-size: 1.9rem; color: var(--text); line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.bar-track { height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width .5s ease; }
+.bar-fill.warn { background: var(--accent2); }
+.bar-fill.over { background: var(--danger); }
+
+/* Input */
+.input-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 28px; }
+.input-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.input-card-header label { font-size: 13px; color: var(--muted); }
+.input-card-header input[type=date] { font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; background: var(--bg); color: var(--text); cursor: pointer; }
+.date-warn { font-size: 12px; color: var(--accent2); }
+.input-row { display: flex; gap: 10px; }
+.input-row input[type=text] { flex: 1; font-family: 'DM Sans', sans-serif; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 15px; background: var(--bg); color: var(--text); outline: none; transition: border-color .2s; }
+.input-row input[type=text]:focus { border-color: var(--accent); background: var(--surface); }
+.input-row input[type=text]::placeholder { color: var(--muted); }
+.add-btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 11px 22px; cursor: pointer; transition: opacity .2s, transform .1s; white-space: nowrap; }
+.add-btn:hover { opacity: .88; }
+.add-btn:active { transform: scale(.98); }
+.feedback { font-size: 13px; min-height: 20px; margin-top: 10px; color: var(--accent); }
+.feedback.err { color: var(--danger); }
+.hints { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+.hints span { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 11px; margin-right: 4px; }
+
+/* Entries */
+.section-title { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 400; color: var(--text); margin-bottom: 14px; }
+.day-block { margin-bottom: 24px; }
+.day-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--text); color: white; border-radius: var(--radius) var(--radius) 0 0; }
+.day-header-left { font-size: 13px; font-weight: 500; }
+.day-header-right { font-size: 12px; opacity: .7; }
+.day-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; table-layout: fixed; }
+.day-table thead tr { border-bottom: 1px solid var(--border); background: #fafaf8; }
+.day-table th { padding: 9px 10px; text-align: left; font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); overflow: hidden; }
+.day-table th.r, .day-table td.r { text-align: right; }
+.day-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-size: 13px; overflow: hidden; }
+.day-table tr:last-child td { border-bottom: none; }
+.day-table tr.data-row:hover td { background: var(--bg); }
+.time-col { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.label-col { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+.tag-food { background: var(--accent-light); color: var(--accent); }
+.tag-sport { background: var(--accent2-light); color: var(--accent2); }
+.num-col { font-variant-numeric: tabular-nums; color: var(--text); }
+.del-btn { display: block; width: 24px; height: 24px; line-height: 22px; text-align: center; background: none; border: 1px solid var(--border); border-radius: 5px; cursor: pointer; color: var(--muted); font-size: 14px; transition: all .15s; margin: 0 auto; }
+.del-btn:hover { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+.sum-row td { background: var(--accent-light); font-weight: 500; font-size: 13px; border-top: 1px solid var(--border); border-bottom: none; color: var(--accent); }
+.empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; font-style: italic; }
+
+/* Import button */
+#importFileInput { display: none; }
+.import-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 20px; padding: 7px 16px; cursor: pointer; transition: all .2s; }
+.import-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+@media (max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 1.5rem; }
+  .header-left h1 { font-size: 1.7rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Mein <em>Ernährungs</em>tagebuch</h1>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+    <div class="btn-row">
+      <button class="import-btn" onclick="document.getElementById('importFileInput').click()">↑ Importieren</button>
+      <input type="file" id="importFileInput" accept=".csv">
+      <button class="export-btn" onclick="exportCSV()">↓ Als CSV exportieren</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Kalorien heute</div>
+      <div class="stat-value" id="sKcal">0</div>
+      <div class="stat-sub" id="sKcalSub">0 % von 2000 kcal</div>
+      <div class="bar-track"><div class="bar-fill" id="barKcal" style="width:0%"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Kohlenhydrate</div>
+      <div class="stat-value" id="sKh">0g</div>
+      <div class="stat-sub" id="sKhSub">0 % von 300g</div>
+      <div class="bar-track"><div class="bar-fill" id="barKh" style="width:0%"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Sport heute</div>
+      <div class="stat-value" id="sSport">0</div>
+      <div class="stat-sub" id="sBurned">min · 0 kcal verbrannt</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Einträge heute</div>
+      <div class="stat-value" id="sCount">0</div>
+      <div class="stat-sub" id="sNet">Netto: 0 kcal</div>
+    </div>
+  </div>
+
+  <div class="input-card">
+    <div class="input-card-header">
+      <label for="dateIn">Datum:</label>
+      <input type="date" id="dateIn">
+      <span class="date-warn" id="dateWarn" style="display:none">⚠ Anderer Tag</span>
+    </div>
+    <div class="input-row">
+      <input type="text" id="mainIn" placeholder="z.B. 8:00 Müsli Standard, 12:30 Cappuccino, 18:00 8km Fahrrad …">
+      <button class="add-btn" onclick="addEntry()">Eintragen</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <div class="hints">
+      Beispiele:
+      <span>12:30 Bowl</span>
+      <span>Cappuccino</span>
+      <span>halbe Pizza Margherita</span>
+      <span>8km Fahrrad</span>
+      <span>Pizza 900 kcal</span>
+      <span>Müsli Standard</span>
+    </div>
+  </div>
+
+  <div class="section-title">Einträge nach Tagen</div>
+  <div id="tableArea"><div class="empty">Noch keine Einträge.</div></div>
+
+</div>
+
+<script>
+const GOAL_KCAL = 2000, GOAL_KH = 300;
+const LS_KEY = 'ernaehrungstagebuch_v1';
+
+const STD = {
+  'standardmüsli': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
+  'müsli (standard)': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
+  'müsli standard': { label: 'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)', k: 380, kh: 45 },
+  'standard müsli': { label: 'Standardmüsli', k: 380, kh: 45 },
+  'rote bete salat': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 },
+  'rote-bete-salat': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 },
+  'rote bete': { label: 'Rote-Bete-Salat (250g Rote Bete, 70g Feta, 20g Zwiebel, 15ml Olivenöl, Koriander, Essig)', k: 450, kh: 27 }
+};
+
+const FOOD = [
+  ['halbe pizza margherita',400,48],['halbe pizza salami',525,43],['halbe pizza funghi',435,46],
+  ['halbe pizza rucola',460,43],['halbe pizza',450,44],
+  ['pizza margherita',800,95],['pizza salami',1050,85],['pizza funghi',870,92],
+  ['pizza rucola',920,85],['pizza speck kartoffeln',1080,100],['pizza mista',1100,90],['pizza',900,90],
+  ['buddha bowl',700,85],['poke bowl',620,70],['power bowl',750,80],['quinoa bowl',680,90],['bowl',650,75],
+  ['großer börek',420,35],['grosser börek',420,35],['börek groß',420,35],['börek gross',420,35],
+  ['kleiner börek',200,18],['börek klein',200,18],
+  ['börek',300,25],
+  ['großer salat',450,27],['grosser salat',450,27],['salat groß',450,27],['salat gross',450,27],['salat (groß)',450,27],
+  ['caesar salat',450,30],['gemischter salat',320,20],['salatteller',350,22],
+  ['grüner salat',150,12],['griechischer salat',320,18],
+  ['salat mit hähnchen',450,20],['salat mit schafskäse',380,20],['salat mit feta',380,20],
+  ['salat mit avocado',420,25],['salat',280,18],['beilagensalat',80,6],
+  ['spargelrisotto',420,55],['spargel risotto',420,55],
+  ['lasagne',580,45],['lasagne al forno',580,45],['vegane lasagne',480,48],['vegetarische lasagne',500,50],
+  ['pasta',360,72],['spaghetti',360,72],['nudeln',360,72],['penne',360,72],['fusilli',360,72],
+  ['basmati reis',350,77],['vollkorn reis',340,70],['reis',360,78],
+  ['kartoffeln',250,55],['couscous',350,73],['quinoa',350,65],['bulgur',340,75],
+  ['döner',700,55],['burger',650,55],['sandwich',450,50],
+  ['chicken wrap',580,55],['veggie wrap',480,62],['falafel wrap',520,68],['wrap',550,60],
+  ['flammkuchen',420,35],['focaccia',280,45],['ceviche',120,8],
+  ['butter chicken',450,15],['tikka masala',380,18],['biryani',420,65],['dal',180,28],
+  ['vollkornbrötchen',210,35],['dinkelbrötchen',292,50],['mehrkornbrötchen',220,34],
+  ['brötchen mit butter und aufschnitt',350,40],['brötchen mit aufschnitt',350,40],
+  ['brötchen mit butter und käse',350,40],['brötchen mit käse',340,40],
+  ['brötchen mit butter und schinken',320,40],['brötchen mit schinken',310,40],
+  ['brötchen mit butter und salami',380,40],['brötchen mit salami',370,40],
+  ['brötchen mit salami',380,40],['brötchen mit käse',370,40],
+  ['brötchen mit schinken',310,39],['brötchen mit leberwurst',360,39],
+  ['brötchen mit aufschnitt',350,39],['brötchen mit butter',280,40],
+  ['brötchen',200,38],['semmel',200,38],['croissant',280,32],['bagel',290,56],
+  ['laugenstange',240,42],['laugenbrezel',220,40],
+  ['große brezel',320,55],['grosse brezel',320,55],['brezel groß',320,55],
+  ['kleine brezel',180,32],['brezel klein',180,32],
+  ['brezel',250,44],['breze',250,44],['brezn',250,44],['laugenbrezel',220,40],['salzbrezel',230,42],
+  ['baguette mit butter',560,92],['baguette',480,90],['baguettebrötchen',200,38],
+  ['belegtes brot mit käse',380,45],['belegtes brot mit schinken',320,44],
+  ['belegtes brot mit salami',400,44],['belegtes brot mit wurst',360,44],
+  ['belegtes brot',340,44],['butterbrot',220,38],
+  ['vollkornbrot mit butter',280,40],['dinkelbrot mit butter',265,42],
+  ['vollkornbrot',230,38],['dinkelbrot',235,40],['roggenbrot',220,42],
+  ['schwarzbrot',210,40],['weißbrot',250,45],['pumpernickel',180,38],
+  ['toast',80,15],['brot',120,22],['knäckebrot',380,65],
+  ['haferflocken',350,60],['müsli',190,30],
+  ['griechischer joghurt',160,9],['naturjoghurt',95,7],
+  ['skyr',90,6],['joghurt',150,18],['quark',134,4],['magerquark',100,4],
+  ['hummus',360,28],
+  ['rührei',150,2],['spiegelei',90,1],['pochiertes ei',70,1],['ei',70,1],['omelette',280,8],
+  ['pfannkuchen',350,40],['eierpfannkuchen',350,40],
+  ['apfel',80,20],['banane',100,25],['orange',60,15],['birne',85,22],
+  ['erdbeertartelette',500,55],['erdbeer tartelette',500,55],['erdbeertartlette',500,55],
+  ['erdbeer tartlette',500,55],['erdbeertarte',500,55],['erdbeer tarte',500,55],
+  ['erdbeeren gezuckert',100,22],['erdbeeren mit zucker',100,22],
+  ['gezuckerte erdbeeren',100,22],['schale erdbeeren gezuckert',100,22],
+  ['schälchen erdbeeren',100,22],['portion erdbeeren gezuckert',100,22],
+  ['erdbeeren',40,8],['himbeeren',43,5],['blaubeeren',57,12],['trauben',70,16],
+  ['mango',130,32],['kiwi',50,10],
+  ['tafel dunkle schokolade',600,60],['tafel vollmilch schokolade',550,55],['tafel schokolade',550,55],
+  ['rippe dunkle schokolade',100,10],['rippe schokolade',92,9],
+  ['stück schokolade',23,2.5],['schokolade',23,2.5],
+  ['käsekuchen',380,35],['apfelkuchen',320,48],['streuselkuchen',420,55],
+  ['schwarzwälder kirschtorte',520,45],['tiramisu',350,28],
+  ['muffin',320,42],['brownie',380,45],['kuchen',350,45],['donut',280,32],
+  ['streusselkuchen',420,55],
+  // Fingerfood & Meeresfrüchte
+  ['große antipasti',400,12],['grosse antipasti',400,12],['antipasti groß',400,12],['antipasti gross',400,12],
+  ['kleine antipasti',200,6],['antipasti klein',200,6],
+  ['portion antipasti',300,9],['antipasti portion',300,9],['antipasti',300,9],
+  ['bruschetta',85,12],['oliven',115,6],
+  ['garnelen',85,1],['lachs',180,0],
+  // Würstchen
+  ['wiener würstchen',160,1],['wiener',160,1],['würstchen',160,1],
+  ['bockwurst',230,2],['bratwurst',280,2],['currywurst',350,15],
+  ['weißwurst',180,1],['frankfurter',160,1],['knackwurst',210,2],
+  ['hotdog',310,25],
+  // Buletten / Frikadellen
+  ['kleine bulette',120,5],['kleine frikadelle',120,5],
+  ['große bulette',280,8],['große frikadelle',280,8],['grosse bulette',280,8],
+  ['bulette',180,6],['frikadelle',180,6],['fleischklopse',180,6],['hackfleischbällchen',120,4],
+  // Schnitzel & Paniertes
+  ['schnitzel',420,20],['wiener schnitzel',480,22],['putenschnitzel',320,18],
+  ['chicken nuggets',280,18],['nuggets',280,18],['chicken strips',260,16],
+  // Sonstiges Fleisch
+  ['hackfleisch',280,0],['hackbraten',350,8],['meatballs',200,8],
+  ['spare ribs',420,5],['pulled pork',380,0],['gyros',450,12],
+  ['lammkoteletts',360,0],['hähnchenkeule',320,0],['hähnchenbrust',165,0],
+];
+
+const DRINKS = [
+  { p: ['alkoholfreies bier'], k: 20, kh: 4.5, v: 500 },
+  { p: ['bier', 'pils', 'weizen', 'weissbier', 'märzen'], k: 43, kh: 3.1, v: 500 },
+  { p: ['weißwein', 'weisswein', 'riesling', 'chardonnay'], k: 82, kh: 2.6, v: 150 },
+  { p: ['rotwein', 'spätburgunder', 'merlot', 'cabernet'], k: 85, kh: 2.3, v: 150 },
+  { p: ['prosecco', 'sekt', 'champagner', 'cava'], k: 83, kh: 2.8, v: 100 },
+  // Spritz-Varianten
+  { p: ['aperol spritz', 'aperol'], k: 78, kh: 7.8, v: 200 },
+  { p: ['campari spritz', 'campari'], k: 98, kh: 8.5, v: 200 },
+  { p: ['limoncello spritz'], k: 115, kh: 12.5, v: 200 },
+  { p: ['hugo spritz', 'hugo'], k: 85, kh: 10.2, v: 200 },
+  { p: ['lillet spritz', 'lillet'], k: 88, kh: 8.8, v: 200 },
+  { p: ['wine spritz', 'weißwein spritz', 'weisswein spritz', 'schorle'], k: 55, kh: 4.5, v: 200 },
+  // Tonic-Drinks
+  { p: ['gin tonic', 'g&t'], k: 54, kh: 5.8, v: 250 },
+  { p: ['vodka tonic', 'wodka tonic'], k: 58, kh: 5.8, v: 250 },
+  { p: ['rum tonic'], k: 60, kh: 5.8, v: 250 },
+  { p: ['elderflower tonic', 'holunderblüten tonic', 'holunder tonic'], k: 42, kh: 10.5, v: 250 },
+  { p: ['alkoholfreier gin tonic', 'gin tonic alkoholfrei', '0% gin tonic'], k: 35, kh: 8.8, v: 250 },
+  // Weitere Cocktails & Longdrinks
+  { p: ['mojito'], k: 95, kh: 12, v: 200 },
+  { p: ['pina colada', 'piña colada'], k: 175, kh: 18.5, v: 200 },
+  { p: ['margarita'], k: 168, kh: 13.2, v: 200 },
+  { p: ['cuba libre', 'rum cola'], k: 75, kh: 8.9, v: 250 },
+  { p: ['moscow mule'], k: 64, kh: 7.5, v: 250 },
+  { p: ['dark and stormy'], k: 72, kh: 8.8, v: 250 },
+  { p: ['negroni'], k: 195, kh: 8.2, v: 200 },
+  { p: ['caipirinha'], k: 165, kh: 15, v: 200 },
+  { p: ['daiquiri'], k: 112, kh: 8.5, v: 200 },
+  { p: ['espresso'], k: 9, kh: 0, v: 30 },
+  { p: ['cappuccino'], k: 42, kh: 4.2, v: 150 },
+  { p: ['latte macchiato'], k: 65, kh: 4.8, v: 250 },
+  { p: ['flat white'], k: 68, kh: 4.9, v: 160 },
+  { p: ['chai latte', 'chai'], k: 95, kh: 13.2, v: 250 },
+  { p: ['heiße schokolade', 'heisse schokolade', 'hot chocolate'], k: 77, kh: 10.3, v: 200 },
+  { p: ['latte'], k: 65, kh: 4.8, v: 250 },
+  { p: ['americano'], k: 2, kh: 0.2, v: 200 },
+  { p: ['kaffee', 'coffee'], k: 2, kh: 0.2, v: 200 },
+  { p: ['grüntee', 'schwarztee', 'kräutertee', 'früchtetee', 'tee', 'tea'], k: 1, kh: 0.1, v: 250 },
+  { p: ['orangensaft', 'o-saft'], k: 45, kh: 10.4, v: 200 },
+  { p: ['apfelsaft'], k: 46, kh: 11.2, v: 200 },
+  { p: ['traubensaft'], k: 60, kh: 14.8, v: 200 },
+  { p: ['cola zero', 'coke zero', 'cola light', 'pepsi light'], k: 0, kh: 0, v: 330 },
+  { p: ['coca cola', 'cola', 'coke', 'pepsi'], k: 42, kh: 10.6, v: 330 },
+  { p: ['sprite', 'fanta', 'limonade', 'limo'], k: 38, kh: 9.2, v: 330 },
+  { p: ['tonic water', 'tonic'], k: 34, kh: 8.8, v: 250 },
+  { p: ['ginger ale'], k: 34, kh: 8.5, v: 250 },
+  { p: ['ginger beer'], k: 38, kh: 9.6, v: 250 },
+  { p: ['red bull', 'monster', 'energydrink'], k: 45, kh: 11, v: 250 },
+  { p: ['mineralwasser', 'sprudel', 'wasser', 'water'], k: 0, kh: 0, v: 250 }
+];
+
+const SPORT = [
+  // Fahrrad: km- und minuten-basiert
+  { r: /(\d+(?:[,.]\d+)?)\s*km\s*(fahrrad|rad|bike|radfahren)/i, kpkm: 4, bpkm: 30 },
+  { r: /(fahrrad|rad|bike|radfahren)[^\d]*(\d+(?:[,.]\d+)?)\s*km/i, kpkm: 4, bpkm: 30, ni: 2 },
+  { r: /(\d+)\s*min\s*(fahrrad|rad|bike|radfahren)/i, kpmin: 1, bpmin: 8 },
+  { r: /(fahrrad|rad|bike|radfahren)[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 8, ni: 2 },
+  { r: /(\d+(?:[,.]\d+)?)\s*std\s*(fahrrad|rad|bike|radfahren)/i, kpmin: 60, bpmin: 8 },
+  { r: /(fahrrad|rad|bike|radfahren)[^\d]*(\d+(?:[,.]\d+)?)\s*std/i, kpmin: 60, bpmin: 8, ni: 2 },
+  // Laufen / Joggen / Running: km-basiert (73 kcal/km, 10km=60min → 12.2 kcal/min)
+  { r: /(\d+(?:[,.]\d+)?)\s*km\s*(laufen|joggen|rennen|running|lauftraining|jog)/i, kpkm: 6, bpkm: 73 },
+  { r: /(laufen|joggen|rennen|running|lauftraining)[^\d]*(\d+(?:[,.]\d+)?)\s*km/i, kpkm: 6, bpkm: 73, ni: 2 },
+  // Laufen: minuten-basiert
+  { r: /(\d+)\s*min\s*(laufen|joggen|rennen|running|lauftraining)/i, kpmin: 1, bpmin: 12.2 },
+  { r: /(laufen|joggen|rennen|running|lauftraining)[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 12.2, ni: 2 },
+  // Laufen: stunden-basiert (1 Std = 60 min = 730 kcal)
+  { r: /(\d+(?:[,.]\d+)?)\s*std\s*(laufen|joggen|rennen|running|lauftraining)/i, kpmin: 60, bpmin: 12.2 },
+  { r: /(laufen|joggen|rennen|running|lauftraining)[^\d]*(\d+(?:[,.]\d+)?)\s*std/i, kpmin: 60, bpmin: 12.2, ni: 2 },
+  { r: /(\d+(?:[,.]\d+)?)\s*stunde[n]?\s*(laufen|joggen|running|lauftraining)/i, kpmin: 60, bpmin: 12.2 },
+  { r: /(laufen|joggen|running|lauftraining)[^\d]*(\d+(?:[,.]\d+)?)\s*stunde[n]?/i, kpmin: 60, bpmin: 12.2, ni: 2 },
+  // Schwimmen
+  { r: /(\d+)\s*km\s*schwimm/i, kpkm: 35, bpkm: 50 },
+  { r: /schwimm[^\d]*(\d+)\s*km/i, kpkm: 35, bpkm: 50 },
+  { r: /(\d+)\s*min\s*schwimm/i, kpmin: 1, bpmin: 8 },
+  { r: /schwimm[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 8 },
+  // Krafttraining (425 kcal / 45 min = 9.4 kcal/min)
+  { r: /(\d+)\s*min\s*(krafttraining|krafftraining)/i, kpmin: 1, bpmin: 9.4 },
+  { r: /(krafttraining|krafftraining)[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 9.4, ni: 2 },
+  { r: /(\d+(?:[,.]\d+)?)\s*std\s*(krafttraining|krafftraining)/i, kpmin: 60, bpmin: 9.4 },
+  { r: /(krafttraining|krafftraining)[^\d]*(\d+(?:[,.]\d+)?)\s*std/i, kpmin: 60, bpmin: 9.4, ni: 2 },
+  // Sonstiger Sport
+  { r: /(\d+)\s*min\s*(yoga|pilates|training|fitness|gym)/i, kpmin: 1, bpmin: 5 },
+  { r: /(yoga|pilates|training|fitness|gym)[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 5, ni: 2 },
+  { r: /(\d+)\s*min\s*(spazieren|spaziergang|gehen|walken|walking)/i, kpmin: 1, bpmin: 4 },
+  { r: /(spazieren|spaziergang|walken|walking)[^\d]*(\d+)\s*min/i, kpmin: 1, bpmin: 4, ni: 2 },
+  { r: /(\d+(?:[,.]\d+)?)\s*km\s*(spazieren|gehen|walken|walking)/i, kpkm: 12, bpkm: 40 },
+  { r: /(spazieren|walken|walking)[^\d]*(\d+(?:[,.]\d+)?)\s*km/i, kpkm: 12, bpkm: 40, ni: 2 }
+];
+
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+function isoToDE(s) { const p = s.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+function deToISO(s) { const p = s.split('.'); return (p[2] || '2025') + '-' + (p[1] || '01').padStart(2, '0') + '-' + (p[0] || '01').padStart(2, '0'); }
+function nowTime() { return new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
+function fmtDate(de) {
+  const iso = deToISO(de);
+  return new Date(iso).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function getTime(t) {
+  const m = t.match(/\b(\d{1,2})[:.hH](\d{2})\b|\b(\d{1,2})\s*uhr\b/i);
+  if (!m) return null;
+  const h = parseInt(m[1] != null ? m[1] : m[3]), mn = parseInt(m[2] != null ? m[2] : 0);
+  if (h >= 0 && h < 24 && mn >= 0 && mn < 60) return String(h).padStart(2, '0') + ':' + String(mn).padStart(2, '0');
+  return null;
+}
+function stripT(t) {
+  return t
+    .replace(/\b(\d{1,2})[:.hH](\d{2})\b/g, '')  // Uhrzeiten entfernen z.B. 14:00 oder 8h30
+    .replace(/\b(\d{1,2})\s*uhr\b/gi, '')          // "14 Uhr" entfernen
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function parse(raw) {
+  const clean = stripT(raw);
+  const lo = clean.toLowerCase().trim();
+  const r = { k: 0, kh: 0, min: 0, burned: 0, label: clean };
+
+  for (const s of SPORT) {
+    const m = lo.match(s.r);
+    if (m) {
+      let n = 0;
+      if (s.ni) {
+        n = parseFloat((m[s.ni] || '0').replace(',', '.'));
+      } else {
+        for (let i = 1; i < m.length; i++) {
+          if (m[i] && /^[\d.,]+$/.test(m[i])) { n = parseFloat(m[i].replace(',', '.')); break; }
+        }
+      }
+      if (n > 0) {
+        // kpkm: Minuten pro km, bpkm: kcal pro km
+        // kpmin: Multiplikator für Minuten (1=direkt, 60=Stunden→Minuten), bpmin: kcal pro Minute
+        const totalMin = s.kpkm ? Math.round(n * s.kpkm) : Math.round(n * s.kpmin);
+        const burned = s.bpkm ? Math.round(n * s.bpkm) : Math.round(totalMin * s.bpmin);
+        r.min = totalMin;
+        r.burned = burned;
+        return r;
+      }
+    }
+  }
+
+  for (const [k, v] of Object.entries(STD)) {
+    if (lo.includes(k)) { r.k = v.k; r.kh = v.kh; r.label = v.label; return r; }
+  }
+
+  const manK = lo.match(/(\d+)\s*(kcal|kalorien|cal)/i);
+  const manKH = lo.match(/(\d+)\s*g?\s*(kh|kohlenhydrate)/i);
+
+  // ── Einheitliche Mengen-Erkennung ────────────────────────────────────────
+  const UNITS = new Set(['stück','portionen','portion','teller','gläser','glas','scheiben','scheibe','becher','flaschen','flasche','dosen','dose','schälchen','schalen','schale']);
+  const FRAC_MAP = {'¼':0.25,'⅓':0.33,'½':0.5,'⅔':0.66,'¾':0.75};
+  function getMul(raw) {
+    const t = raw.trim().toLowerCase();
+    if (FRAC_MAP[t[0]]) return FRAC_MAP[t[0]];
+    if (/^halb/.test(t) || /^0[,.]5\b/.test(t)) return 0.5;
+    if (/^ein\s+viertel/.test(t)) return 0.25;
+    if (/^drei\s+viertel/.test(t)) return 0.75;
+    if (/^ein\s+drittel/.test(t)) return 0.33;
+    if (/^zwei\s+drittel/.test(t)) return 0.66;
+    const tokens = t.split(/\s+/);
+    const first = parseFloat(tokens[0].replace(',','.'));
+    if (!isNaN(first) && first > 0 && first <= 20) {
+      if (tokens.length === 1 || UNITS.has(tokens[1]) || !isNaN(parseFloat(tokens[1]))) {
+        if (first >= 2 || first < 1) return first;
+      } else {
+        if (first >= 2) return first;
+      }
+    }
+    const last = tokens[tokens.length-1];
+    const secondLast = tokens[tokens.length-2];
+    if (UNITS.has(last) && secondLast) {
+      const n = parseFloat(secondLast.replace(',','.'));
+      if (!isNaN(n) && n >= 2 && n <= 20) return n;
+    }
+    const lastN = parseFloat(last.replace(',','.'));
+    if (!isNaN(lastN) && lastN >= 2 && lastN <= 20) return lastN;
+    return 1;
+  }
+
+  let vol = null;
+  const vm = lo.match(/(\d+(?:[,.]\d+)?)\s*ml|(\d+(?:[,.]\d+)?)\s*l\b/i);
+  if (vm) {
+    if (vm[0].toLowerCase().includes('ml')) {
+      vol = parseFloat((vm[1] || '0').replace(',', '.'));
+    } else {
+      vol = parseFloat((vm[2] || '0').replace(',', '.')) * 1000;
+    }
+  }
+
+  const gmul = getMul(lo);
+
+  for (const d of DRINKS) {
+    for (const pat of d.p) {
+      const rx = new RegExp('\\b' + pat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      if (rx.test(lo)) {
+        const fv = (vol || d.v) * gmul;
+        r.k = Math.round((fv / 100) * d.k);
+        r.kh = Math.round((fv / 100) * d.kh * 10) / 10;
+        return r;
+      }
+    }
+  }
+
+  const mul = getMul(lo);
+
+  for (const [name, kcal, kh] of FOOD) {
+    const rx = name.includes(' ')
+      ? new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+      : new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    if (rx.test(lo)) {
+      r.k = Math.round((manK ? parseInt(manK[1]) : kcal) * mul);
+      r.kh = Math.round(((manKH ? parseFloat(manKH[1]) : kh) * mul) * 10) / 10;
+      return r;
+    }
+  }
+
+  if (manK) r.k = parseInt(manK[1]);
+  if (manKH) r.kh = parseInt(manKH[1]);
+  return r;
+}
+
+// Storage
+const HISTORICAL_ENTRIES = [
+  {id:1,date:'23.04.2026',time:'08:30',label:'Fahrrad 8km',k:0,kh:0,min:32,burned:240},
+  {id:2,date:'23.04.2026',time:'09:00',label:'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)',k:380,kh:45,min:0,burned:0},
+  {id:3,date:'23.04.2026',time:'13:00',label:'Großer Salat',k:450,kh:27,min:0,burned:0},
+  {id:4,date:'23.04.2026',time:'14:00',label:'Apfel',k:80,kh:20,min:0,burned:0},
+  {id:5,date:'23.04.2026',time:'15:30',label:'Fahrrad 8km',k:0,kh:0,min:32,burned:240},
+  {id:6,date:'23.04.2026',time:'17:00',label:'Cappuccino',k:63,kh:6.3,min:0,burned:0},
+  {id:7,date:'23.04.2026',time:'19:00',label:'Wagner Pizza Salami',k:1050,kh:85,min:0,burned:0},
+  {id:8,date:'24.04.2026',time:'08:00',label:'Standard-Müsli',k:190,kh:30,min:0,burned:0},
+  {id:9,date:'24.04.2026',time:'08:00',label:'Fahrrad 8km',k:0,kh:0,min:32,burned:240},
+  {id:10,date:'24.04.2026',time:'09:00',label:'Espresso',k:3,kh:0,min:0,burned:0},
+  {id:11,date:'24.04.2026',time:'11:29',label:'½ Stück Streusselkuchen',k:210,kh:27.5,min:0,burned:0},
+  {id:12,date:'24.04.2026',time:'13:30',label:'Salat groß',k:450,kh:27,min:0,burned:0},
+  {id:13,date:'24.04.2026',time:'17:00',label:'Fahrrad 30 min',k:0,kh:0,min:30,burned:240},
+  {id:14,date:'24.04.2026',time:'18:00',label:'2 Teller Spargelrisotto',k:840,kh:110,min:0,burned:0},
+  {id:15,date:'24.04.2026',time:'18:00',label:'Campari-Spritz',k:196,kh:17,min:0,burned:0},
+  {id:16,date:'24.04.2026',time:'20:00',label:'3 Weißwein',k:369,kh:11.7,min:0,burned:0},
+  {id:17,date:'25.04.2026',time:'07:00',label:'Laufen 10km',k:0,kh:0,min:60,burned:730},
+  {id:18,date:'25.04.2026',time:'13:27',label:'2 Brötchen belegt',k:400,kh:76,min:0,burned:0},
+  {id:19,date:'25.04.2026',time:'14:00',label:'Wiener Würstchen',k:160,kh:1,min:0,burned:0},
+  {id:20,date:'25.04.2026',time:'14:00',label:'Brötchen belegt',k:200,kh:38,min:0,burned:0},
+  {id:21,date:'25.04.2026',time:'16:00',label:'Weißwein 0,4l',k:328,kh:10.4,min:0,burned:0},
+  {id:22,date:'25.04.2026',time:'18:00',label:'¼ Baguette',k:120,kh:22.5,min:0,burned:0},
+  {id:23,date:'25.04.2026',time:'18:00',label:'Antipasti klein',k:200,kh:6,min:0,burned:0},
+  {id:24,date:'25.04.2026',time:'20:00',label:'2 Teller Linsen-Kartoffel-Suppe',k:500,kh:0,min:0,burned:0},
+  {id:25,date:'26.04.2026',time:'12:00',label:'Fahrradfahren 60 Minuten',k:0,kh:0,min:60,burned:480},
+  {id:26,date:'26.04.2026',time:'13:00',label:'Brötchen belegt',k:200,kh:38,min:0,burned:0},
+  {id:27,date:'26.04.2026',time:'13:24',label:'Brötchen mit Butter und Aufschnitt',k:350,kh:40,min:0,burned:0},
+  {id:28,date:'26.04.2026',time:'14:00',label:'Cevapcici mit Brot & Salat',k:1000,kh:18,min:0,burned:0},
+  {id:29,date:'26.04.2026',time:'14:00',label:'Börek groß',k:420,kh:35,min:0,burned:0},
+  {id:30,date:'26.04.2026',time:'17:00',label:'Erdbeertartelette',k:500,kh:55,min:0,burned:0},
+  {id:31,date:'26.04.2026',time:'17:00',label:'Portion Erdbeeren gezuckert',k:100,kh:22,min:0,burned:0},
+  {id:32,date:'26.04.2026',time:'18:30',label:'Salat groß',k:450,kh:27,min:0,burned:0},
+  {id:33,date:'26.04.2026',time:'19:00',label:'Weißwein',k:123,kh:3.9,min:0,burned:0},
+  {id:34,date:'27.04.2026',time:'07:00',label:'Krafttraining 45 min',k:0,kh:0,min:45,burned:423},
+  {id:35,date:'27.04.2026',time:'08:00',label:'Fahrradfahren 30 min',k:0,kh:0,min:30,burned:240},
+  {id:36,date:'27.04.2026',time:'10:00',label:'Apfel',k:80,kh:20,min:0,burned:0},
+  {id:37,date:'27.04.2026',time:'12:30',label:'Großer Salat',k:450,kh:27,min:0,burned:0},
+  {id:38,date:'27.04.2026',time:'17:30',label:'Fahrrad 30 min',k:0,kh:0,min:30,burned:240},
+  {id:39,date:'27.04.2026',time:'19:00',label:'4 Scheiben Butterbrot',k:880,kh:152,min:0,burned:0},
+  {id:40,date:'28.04.2026',time:'07:00',label:'Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)',k:380,kh:45,min:0,burned:0},
+  {id:41,date:'28.04.2026',time:'10:00',label:'2 kleine Brezeln',k:360,kh:64,min:0,burned:0},
+  {id:42,date:'28.04.2026',time:'14:00',label:'Salat groß',k:450,kh:27,min:0,burned:0},
+  {id:43,date:'28.04.2026',time:'16:22',label:'Lakritzschnecke',k:41,kh:9,min:0,burned:0},
+  {id:44,date:'28.04.2026',time:'19:30',label:'4 Gläser Rotwein',k:510,kh:13.8,min:0,burned:0},
+  {id:45,date:'28.04.2026',time:'20:00',label:'½ Burrata',k:200,kh:1,min:0,burned:0},
+  {id:46,date:'28.04.2026',time:'20:00',label:'Antipasti klein',k:200,kh:6,min:0,burned:0},
+  {id:47,date:'28.04.2026',time:'21:00',label:'Rinderfilet mit Beilagen',k:730,kh:44,min:0,burned:0},
+];
+
+let entries = [];
+function loadEntries() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      entries = JSON.parse(raw);
+    } else {
+      // Erster Start: historische Einträge laden
+      entries = HISTORICAL_ENTRIES;
+      localStorage.setItem(LS_KEY, JSON.stringify(entries));
+    }
+  } catch(e) { entries = HISTORICAL_ENTRIES; }
+}
+function saveEntries() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(entries)); } catch(e) {}
+}
+loadEntries();
+
+function addEntry() {
+  const raw = document.getElementById('mainIn').value.trim();
+  if (!raw) return;
+  const dateISO = document.getElementById('dateIn').value || todayISO();
+  const dateDE = isoToDE(dateISO);
+  const t = getTime(raw);
+  const time = t || nowTime();
+  const n = parse(raw);
+  entries.push({ id: Date.now(), date: dateDE, time, label: n.label, k: n.k, kh: n.kh, min: n.min, burned: n.burned });
+  saveEntries();
+  document.getElementById('mainIn').value = '';
+  const fb = document.getElementById('fb');
+  if (n.min > 0) {
+    fb.textContent = '✓ Sport: ' + n.min + ' min, ' + n.burned + ' kcal verbrannt';
+    fb.className = 'feedback';
+  } else if (n.k > 0) {
+    fb.textContent = '✓ ' + n.label + ' — ' + n.k + ' kcal, ' + n.kh + 'g KH';
+    fb.className = 'feedback';
+  } else {
+    fb.textContent = 'Eingetragen (Kalorien unbekannt — tipp z.B. "500 kcal" dazu)';
+    fb.className = 'feedback err';
+  }
+  setTimeout(() => { fb.textContent = ''; fb.className = 'feedback'; }, 5000);
+  render();
+}
+
+function deleteEntry(id) {
+  entries = entries.filter(e => e.id !== id);
+  saveEntries();
+  render();
+}
+
+function exportCSV() {
+  if (!entries.length) { alert('Keine Einträge zum Exportieren.'); return; }
+  const rows = [['Datum','Zeit','Eintrag','kcal','KH (g)','Sport (min)','Verbrannt (kcal)']];
+  entries.forEach(e => rows.push([e.date, e.time, '"' + e.label + '"', e.k || 0, e.kh || 0, e.min || 0, e.burned || 0]));
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csv);
+  a.download = 'ernaehrungstagebuch_' + todayISO() + '.csv';
+  a.click();
+}
+
+document.getElementById('importFileInput').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (ev) {
+    try {
+      const lines = ev.target.result.split('\n');
+      let count = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].trim().split(',');
+        if (cols.length >= 7) {
+          entries.push({
+            id: Date.now() + i,
+            date: cols[0],
+            time: cols[1],
+            label: cols[2].replace(/"/g, ''),
+            k: parseInt(cols[3]) || 0,
+            kh: parseFloat(cols[4]) || 0,
+            min: parseInt(cols[5]) || 0,
+            burned: parseInt(cols[6]) || 0
+          });
+          count++;
+        }
+      }
+      saveEntries();
+      render();
+      alert(count + ' Einträge importiert.');
+    } catch (err) { alert('Fehler beim Import.'); }
+  };
+  reader.readAsText(file, 'UTF-8');
+  e.target.value = '';
+});
+
+function render() {
+  const todayDE = isoToDE(todayISO());
+  const todayE = entries.filter(e => e.date === todayDE);
+  const tK = todayE.reduce((s, e) => s + (e.k || 0), 0);
+  const tKH = todayE.reduce((s, e) => s + (e.kh || 0), 0);
+  const tMin = todayE.reduce((s, e) => s + (e.min || 0), 0);
+  const tB = todayE.reduce((s, e) => s + (e.burned || 0), 0);
+  const netto = tK - tB;
+
+  document.getElementById('sKcal').textContent = tK;
+  document.getElementById('sKcalSub').textContent = Math.round(tK / GOAL_KCAL * 100) + ' % von 2000 kcal';
+  document.getElementById('sKh').textContent = tKH + 'g';
+  document.getElementById('sKhSub').textContent = Math.round(tKH / GOAL_KH * 100) + ' % von 300g';
+  document.getElementById('sSport').textContent = tMin;
+  document.getElementById('sBurned').textContent = 'min · ' + tB + ' kcal verbrannt';
+  document.getElementById('sCount').textContent = todayE.length;
+  document.getElementById('sNet').textContent = 'Netto: ' + netto + ' kcal';
+
+  const pK = Math.min(tK / GOAL_KCAL * 100, 100);
+  const bK = document.getElementById('barKcal');
+  bK.style.width = pK + '%';
+  bK.className = 'bar-fill' + (tK > GOAL_KCAL ? ' over' : tK > GOAL_KCAL * 0.85 ? ' warn' : '');
+
+  const pKH = Math.min(tKH / GOAL_KH * 100, 100);
+  const bKH = document.getElementById('barKh');
+  bKH.style.width = pKH + '%';
+  bKH.className = 'bar-fill' + (tKH > GOAL_KH ? ' over' : tKH > GOAL_KH * 0.85 ? ' warn' : '');
+
+  const byDate = {};
+  entries.forEach(e => { if (!byDate[e.date]) byDate[e.date] = []; byDate[e.date].push(e); });
+  const dates = Object.keys(byDate).sort((a, b) => new Date(deToISO(b)) - new Date(deToISO(a)));
+
+  let html = '';
+  if (!dates.length) { html = '<div class="empty">Noch keine Einträge — tippe oben und drücke Enter.</div>'; }
+  for (const date of dates) {
+    const de = byDate[date].sort((a, b) => a.time.localeCompare(b.time));
+    const dK = de.reduce((s, e) => s + (e.k || 0), 0);
+    const dKH = de.reduce((s, e) => s + (e.kh || 0), 0);
+    const dMin = de.reduce((s, e) => s + (e.min || 0), 0);
+    const dB = de.reduce((s, e) => s + (e.burned || 0), 0);
+    const isToday = date === todayDE;
+    html += `<div class="day-block">
+      <div class="day-header">
+        <div class="day-header-left">${fmtDate(date)}${isToday ? ' · heute' : ''}</div>
+        <div class="day-header-right">${dK} kcal · ${dKH}g KH${dMin > 0 ? ' · ' + dMin + ' min Sport' : ''}</div>
+      </div>
+      <table class="day-table">
+        <colgroup>
+          <col style="width:46px">
+          <col>
+          <col style="width:56px">
+          <col style="width:52px">
+          <col style="width:52px">
+          <col style="width:56px">
+          <col style="width:36px">
+        </colgroup>
+        <thead><tr>
+          <th>Zeit</th>
+          <th>Eintrag</th>
+          <th class="r">kcal</th>
+          <th class="r">KH</th>
+          <th class="r">Sport</th>
+          <th class="r">Verbr.</th>
+          <th></th>
+        </tr></thead>
+        <tbody>`;
+    for (const e of de) {
+      const sport = e.min > 0;
+      const tag = sport
+        ? '<span class="tag tag-sport">sport</span>'
+        : e.k > 0 ? '<span class="tag tag-food">' + e.k + ' kcal</span>' : '';
+      html += `<tr class="data-row">
+        <td class="time-col">${e.time}</td>
+        <td class="label-col" title="${e.label}">${e.label}${tag}</td>
+        <td class="r num-col">${e.k || '–'}</td>
+        <td class="r num-col">${e.kh ? e.kh + 'g' : '–'}</td>
+        <td class="r num-col">${e.min || '–'}</td>
+        <td class="r num-col">${e.burned || '–'}</td>
+        <td><button class="del-btn" onclick="deleteEntry(${e.id})" title="Löschen">×</button></td>
+      </tr>`;
+    }
+    html += `<tr class="sum-row">
+        <td></td><td>Tagessumme</td>
+        <td class="r">${dK}</td>
+        <td class="r">${dKH}g</td>
+        <td class="r">${dMin || '–'}</td>
+        <td class="r">${dB || '–'}</td>
+        <td></td>
+      </tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+  document.getElementById('tableArea').innerHTML = html;
+}
+
+// Init
+const di = document.getElementById('dateIn');
+di.value = todayISO();
+di.addEventListener('change', function () {
+  document.getElementById('dateWarn').style.display = this.value !== todayISO() ? 'inline' : 'none';
+});
+document.getElementById('mainIn').addEventListener('keydown', e => { if (e.key === 'Enter') addEntry(); });
+document.getElementById('headerDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+loadEntries();
+render();
+</script>
+</body>
+</html>
