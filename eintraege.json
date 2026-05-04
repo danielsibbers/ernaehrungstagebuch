@@ -1,0 +1,702 @@
+[
+  {
+    "id": 1,
+    "date": "23.04.2026",
+    "time": "08:30",
+    "label": "Fahrrad 8km",
+    "k": 0,
+    "kh": 0,
+    "min": 32,
+    "burned": 240
+  },
+  {
+    "id": 2,
+    "date": "23.04.2026",
+    "time": "09:00",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 3,
+    "date": "23.04.2026",
+    "time": "13:00",
+    "label": "Großer Salat",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 4,
+    "date": "23.04.2026",
+    "time": "14:00",
+    "label": "Apfel",
+    "k": 80,
+    "kh": 20,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 5,
+    "date": "23.04.2026",
+    "time": "15:30",
+    "label": "Fahrrad 8km",
+    "k": 0,
+    "kh": 0,
+    "min": 32,
+    "burned": 240
+  },
+  {
+    "id": 6,
+    "date": "23.04.2026",
+    "time": "17:00",
+    "label": "Cappuccino",
+    "k": 63,
+    "kh": 6.3,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 7,
+    "date": "23.04.2026",
+    "time": "19:00",
+    "label": "Wagner Pizza Salami",
+    "k": 1050,
+    "kh": 85,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 8,
+    "date": "24.04.2026",
+    "time": "08:00",
+    "label": "Standard-Müsli",
+    "k": 190,
+    "kh": 30,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 9,
+    "date": "24.04.2026",
+    "time": "08:00",
+    "label": "Fahrrad 8km",
+    "k": 0,
+    "kh": 0,
+    "min": 32,
+    "burned": 240
+  },
+  {
+    "id": 10,
+    "date": "24.04.2026",
+    "time": "09:00",
+    "label": "Espresso",
+    "k": 3,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 11,
+    "date": "24.04.2026",
+    "time": "11:29",
+    "label": "½ Stück Streusselkuchen",
+    "k": 210,
+    "kh": 27.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 12,
+    "date": "24.04.2026",
+    "time": "13:30",
+    "label": "Salat groß",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 13,
+    "date": "24.04.2026",
+    "time": "17:00",
+    "label": "Fahrrad 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 14,
+    "date": "24.04.2026",
+    "time": "18:00",
+    "label": "2 Teller Spargelrisotto",
+    "k": 840,
+    "kh": 110,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 15,
+    "date": "24.04.2026",
+    "time": "18:00",
+    "label": "Campari-Spritz",
+    "k": 196,
+    "kh": 17,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 16,
+    "date": "24.04.2026",
+    "time": "20:00",
+    "label": "3 Weißwein",
+    "k": 369,
+    "kh": 11.7,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 17,
+    "date": "25.04.2026",
+    "time": "07:00",
+    "label": "Laufen 10km",
+    "k": 0,
+    "kh": 0,
+    "min": 60,
+    "burned": 730
+  },
+  {
+    "id": 18,
+    "date": "25.04.2026",
+    "time": "13:27",
+    "label": "2 Brötchen belegt",
+    "k": 400,
+    "kh": 76,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 19,
+    "date": "25.04.2026",
+    "time": "14:00",
+    "label": "Wiener Würstchen",
+    "k": 160,
+    "kh": 1,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 20,
+    "date": "25.04.2026",
+    "time": "14:00",
+    "label": "Brötchen belegt",
+    "k": 200,
+    "kh": 38,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 21,
+    "date": "25.04.2026",
+    "time": "16:00",
+    "label": "Weißwein 0,4l",
+    "k": 328,
+    "kh": 10.4,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 22,
+    "date": "25.04.2026",
+    "time": "18:00",
+    "label": "¼ Baguette",
+    "k": 120,
+    "kh": 22.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 23,
+    "date": "25.04.2026",
+    "time": "18:00",
+    "label": "Antipasti klein",
+    "k": 200,
+    "kh": 6,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 24,
+    "date": "25.04.2026",
+    "time": "20:00",
+    "label": "2 Teller Linsen-Kartoffel-Suppe",
+    "k": 500,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 25,
+    "date": "26.04.2026",
+    "time": "12:00",
+    "label": "Fahrradfahren 60 Minuten",
+    "k": 0,
+    "kh": 0,
+    "min": 60,
+    "burned": 480
+  },
+  {
+    "id": 26,
+    "date": "26.04.2026",
+    "time": "13:00",
+    "label": "Brötchen belegt",
+    "k": 200,
+    "kh": 38,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 27,
+    "date": "26.04.2026",
+    "time": "13:24",
+    "label": "Brötchen mit Butter und Aufschnitt",
+    "k": 350,
+    "kh": 40,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 28,
+    "date": "26.04.2026",
+    "time": "14:00",
+    "label": "Cevapcici mit Brot & Salat",
+    "k": 1000,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 29,
+    "date": "26.04.2026",
+    "time": "14:00",
+    "label": "Börek groß",
+    "k": 420,
+    "kh": 35,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 30,
+    "date": "26.04.2026",
+    "time": "17:00",
+    "label": "Erdbeertartelette",
+    "k": 500,
+    "kh": 55,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 31,
+    "date": "26.04.2026",
+    "time": "17:00",
+    "label": "Portion Erdbeeren gezuckert",
+    "k": 100,
+    "kh": 22,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 32,
+    "date": "26.04.2026",
+    "time": "18:30",
+    "label": "Salat groß",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 33,
+    "date": "26.04.2026",
+    "time": "19:00",
+    "label": "Weißwein",
+    "k": 123,
+    "kh": 3.9,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 34,
+    "date": "27.04.2026",
+    "time": "07:00",
+    "label": "Krafttraining 45 min",
+    "k": 0,
+    "kh": 0,
+    "min": 45,
+    "burned": 423
+  },
+  {
+    "id": 35,
+    "date": "27.04.2026",
+    "time": "08:00",
+    "label": "Fahrradfahren 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 36,
+    "date": "27.04.2026",
+    "time": "10:00",
+    "label": "Apfel",
+    "k": 80,
+    "kh": 20,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 37,
+    "date": "27.04.2026",
+    "time": "12:30",
+    "label": "Großer Salat",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 38,
+    "date": "27.04.2026",
+    "time": "17:30",
+    "label": "Fahrrad 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 39,
+    "date": "27.04.2026",
+    "time": "19:00",
+    "label": "4 Scheiben Butterbrot",
+    "k": 880,
+    "kh": 152,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 40,
+    "date": "28.04.2026",
+    "time": "07:00",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 41,
+    "date": "28.04.2026",
+    "time": "10:00",
+    "label": "2 kleine Brezeln",
+    "k": 360,
+    "kh": 64,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 42,
+    "date": "28.04.2026",
+    "time": "14:00",
+    "label": "Salat groß",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 43,
+    "date": "28.04.2026",
+    "time": "16:22",
+    "label": "Lakritzschnecke",
+    "k": 41,
+    "kh": 9,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 44,
+    "date": "28.04.2026",
+    "time": "19:30",
+    "label": "4 Gläser Rotwein",
+    "k": 510,
+    "kh": 13.8,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 45,
+    "date": "28.04.2026",
+    "time": "20:00",
+    "label": "½ Burrata",
+    "k": 200,
+    "kh": 1,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 46,
+    "date": "28.04.2026",
+    "time": "20:00",
+    "label": "Antipasti klein",
+    "k": 200,
+    "kh": 6,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 47,
+    "date": "28.04.2026",
+    "time": "21:00",
+    "label": "Rinderfilet mit Beilagen",
+    "k": 730,
+    "kh": 44,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 48,
+    "date": "29.04.2026",
+    "time": "07:00",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 49,
+    "date": "29.04.2026",
+    "time": "08:00",
+    "label": "Fahrrad 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 50,
+    "date": "29.04.2026",
+    "time": "13:00",
+    "label": "Indisch Annapurna",
+    "k": 700,
+    "kh": 65,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 51,
+    "date": "29.04.2026",
+    "time": "15:30",
+    "label": "Fahrrad 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 52,
+    "date": "29.04.2026",
+    "time": "16:45",
+    "label": "Apfelschorle 0,33l",
+    "k": 76,
+    "kh": 18.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 53,
+    "date": "29.04.2026",
+    "time": "17:00",
+    "label": "Duo Eis Sorbet klein",
+    "k": 120,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 54,
+    "date": "29.04.2026",
+    "time": "18:30",
+    "label": "2 Brötchen belegt",
+    "k": 400,
+    "kh": 76,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 55,
+    "date": "29.04.2026",
+    "time": "19:00",
+    "label": "Spiegelei",
+    "k": 90,
+    "kh": 1,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 56,
+    "date": "30.04.2026",
+    "time": "06:30",
+    "label": "½ Apfel",
+    "k": 40,
+    "kh": 10,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 57,
+    "date": "30.04.2026",
+    "time": "07:00",
+    "label": "Krafttraining 45min",
+    "k": 0,
+    "kh": 0,
+    "min": 45,
+    "burned": 423
+  },
+  {
+    "id": 58,
+    "date": "30.04.2026",
+    "time": "08:30",
+    "label": "Fahrrad 30 min",
+    "k": 0,
+    "kh": 0,
+    "min": 30,
+    "burned": 240
+  },
+  {
+    "id": 59,
+    "date": "30.04.2026",
+    "time": "10:00",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 60,
+    "date": "30.04.2026",
+    "time": "13:30",
+    "label": "Salat Standard",
+    "k": 280,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 61,
+    "date": "02.05.2026",
+    "time": "18:00",
+    "label": "Bier alkoholfrei 0,5l",
+    "k": 100,
+    "kh": 22.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 62,
+    "date": "03.05.2026",
+    "time": "07:00",
+    "label": "Laufen 9km",
+    "k": 0,
+    "kh": 0,
+    "min": 54,
+    "burned": 657
+  },
+  {
+    "id": 63,
+    "date": "03.05.2026",
+    "time": "10:00",
+    "label": "2 Brötchen belegt",
+    "k": 400,
+    "kh": 76,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 64,
+    "date": "03.05.2026",
+    "time": "13:54",
+    "label": "Bier alkoholfrei 0,3l",
+    "k": 60,
+    "kh": 13.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 65,
+    "date": "03.05.2026",
+    "time": "15:00",
+    "label": "Kuchen (Stück)",
+    "k": 350,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 66,
+    "date": "03.05.2026",
+    "time": "18:00",
+    "label": "Gebratene Maultaschen mit Ei",
+    "k": 500,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 67,
+    "date": "03.05.2026",
+    "time": "20:00",
+    "label": "Rotwein",
+    "k": 128,
+    "kh": 3.5,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 68,
+    "date": "04.05.2026",
+    "time": "07:00",
+    "label": "Apfel",
+    "k": 80,
+    "kh": 20,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 69,
+    "date": "04.05.2026",
+    "time": "10:00",
+    "label": "Marzipan Niederegger",
+    "k": 65,
+    "kh": 8,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 1777899134119,
+    "date": "04.05.2026",
+    "time": "13:00",
+    "label": "Salat groß",
+    "k": 450,
+    "kh": 27,
+    "min": 0,
+    "burned": 0
+  }
+]
