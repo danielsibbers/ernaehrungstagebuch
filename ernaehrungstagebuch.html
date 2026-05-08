@@ -184,6 +184,9 @@ const ENTRIES_URL = 'https://raw.githubusercontent.com/danielsibbers/ernaehrungs
 const GH_API = 'https://api.github.com/repos/danielsibbers/ernaehrungstagebuch/contents/eintraege.json';
 let GH_TOKEN = localStorage.getItem(TOKEN_KEY) || '';
 let ghFileSha = null;
+let LEARNED = {};
+function saveLearned() { try { localStorage.setItem('fdt_learned', JSON.stringify(LEARNED)); } catch(e) {} }
+function loadLearned() { try { const r = localStorage.getItem('fdt_learned'); if (r) LEARNED = JSON.parse(r); } catch(e) {} }
 
 // Fallback-Datenbank (wird genutzt wenn GitHub nicht erreichbar)
 let STD = {
@@ -439,54 +442,110 @@ function parse(raw) {
   const manK = lo.match(/(\d+)\s*(kcal|kalorien|cal)/i);
   const manKH = lo.match(/(\d+)\s*g?\s*(kh|kohlenhydrate)/i);
 
-  // ── Einheitliche Mengen-Erkennung ────────────────────────────────────────
-  const UNITS = new Set(['stück','portionen','portion','teller','gläser','glas','scheiben','scheibe','becher','flaschen','flasche','dosen','dose','schälchen','schalen','schale']);
+  // ── Plural-Normalisierung ─────────────────────────────────────────────────
+  // Wandelt häufige Pluralformen in Singular um für besseres Matching
+  function normalizePlural(t) {
+    return t
+      .replace(/\bbratwürste\b/gi, 'bratwurst')
+      .replace(/\bwürstchen\b/gi, 'würstchen')
+      .replace(/\bwiener\s+würstchen\b/gi, 'wiener würstchen')
+      .replace(/\bbrötchen\b/gi, 'brötchen') // unveränderlich
+      .replace(/\bbrezeln\b/gi, 'brezel')
+      .replace(/\bbrezen\b/gi, 'breze')
+      .replace(/\bbuletten\b/gi, 'bulette')
+      .replace(/\bfrikadellen\b/gi, 'frikadelle')
+      .replace(/\bnuggets\b/gi, 'nuggets') // unveränderlich
+      .replace(/\bpfannkuchen\b/gi, 'pfannkuchen') // unveränderlich
+      .replace(/\beier\b/gi, 'ei')
+      .replace(/\bäpfel\b/gi, 'apfel')
+      .replace(/\bbananen\b/gi, 'banane')
+      .replace(/\bschnitzel\b/gi, 'schnitzel') // unveränderlich
+      .replace(/\bmaultaschen\b/gi, 'maultaschen') // unveränderlich
+      .replace(/\bbiere\b/gi, 'bier')
+      .replace(/\bweißweine\b/gi, 'weißwein')
+      .replace(/\bespressos\b/gi, 'espresso')
+      .replace(/\bcappuccinos\b/gi, 'cappuccino')
+      .replace(/\blakritzschnecken\b/gi, 'lakritzschnecke')
+      .replace(/\boliven\b/gi, 'oliven') // unveränderlich
+      .replace(/\bgarnelen\b/gi, 'garnelen'); // unveränderlich
+  }
+
+  // ── Mengen-Extraktion ─────────────────────────────────────────────────────
+  // Erkennt Mengen in allen Positionen und Formaten
+  const UNITS_SET = new Set(['stück','portionen','portion','teller','gläser','glas',
+    'scheiben','scheibe','becher','flaschen','flasche','dosen','dose','schälchen','schalen','schale',
+    'mal','x']);
   const FRAC_MAP = {'¼':0.25,'⅓':0.33,'½':0.5,'⅔':0.66,'¾':0.75};
-  function getMul(raw) {
-    const t = raw.trim().toLowerCase();
+  const WORD_NUMS = {'null':0,'ein':1,'eine':1,'einen':1,'zwei':2,'drei':3,'vier':4,
+    'fünf':5,'sechs':6,'sieben':7,'acht':8,'neun':9,'zehn':10};
+
+  function extractAmount(text) {
+    const t = text.trim().toLowerCase();
+    // Bruch-Symbole am Anfang
     if (FRAC_MAP[t[0]]) return FRAC_MAP[t[0]];
-    if (/^halb/.test(t) || /^0[,.]5\b/.test(t)) return 0.5;
-    if (/^ein\s+viertel/.test(t)) return 0.25;
-    if (/^drei\s+viertel/.test(t)) return 0.75;
-    if (/^ein\s+drittel/.test(t)) return 0.33;
-    if (/^zwei\s+drittel/.test(t)) return 0.66;
-    const tokens = t.split(/\s+/);
-    const first = parseFloat(tokens[0].replace(',','.'));
-    if (!isNaN(first) && first > 0 && first <= 20) {
-      if (tokens.length === 1 || UNITS.has(tokens[1]) || !isNaN(parseFloat(tokens[1]))) {
-        if (first >= 2 || first < 1) return first;
-      } else {
-        if (first >= 2) return first;
-      }
+    // Brüche ausgeschrieben
+    if (/^halb/.test(t) || /^eine?\s+halbe?\b/.test(t)) return 0.5;
+    if (/^ein\s+viertel\b/.test(t)) return 0.25;
+    if (/^drei\s+viertel\b/.test(t)) return 0.75;
+    if (/^ein\s+drittel\b/.test(t)) return 0.33;
+    if (/^zwei\s+drittel\b/.test(t)) return 0.66;
+    // 1/2 Format
+    const fracM = t.match(/^(\d+)\/(\d+)\s/);
+    if (fracM) return parseInt(fracM[1]) / parseInt(fracM[2]);
+    // Zahl × oder x
+    const mulM = t.match(/^(\d+(?:[,.]\d+)?)\s*[×x]\s/) || t.match(/\s[×x]\s*(\d+(?:[,.]\d+)?)$/);
+    if (mulM) return parseFloat(mulM[1].replace(',','.'));
+    // Zahl in Klammern am Ende: "Brötchen (2)"
+    const parenM = t.match(/\((\d+(?:[,.]\d+)?)\)\s*$/);
+    if (parenM) { const n = parseFloat(parenM[1].replace(',','.')); if (n > 0 && n <= 20) return n; }
+    // Zahl am Anfang (mit optionaler Einheit)
+    const startM = t.match(/^(\d+(?:[,.]\d+)?)\s*(?:stück|portionen|portion|teller|gläser|glas|scheiben|scheibe|mal|x|×)?\s+/i);
+    if (startM) { const n = parseFloat(startM[1].replace(',','.')); if (n > 0 && n <= 20) return n; }
+    // Zahl am Ende (mit optionaler Einheit)
+    const endM = t.match(/\s+(\d+(?:[,.]\d+)?)\s*(?:stück|portionen|portion|teller|gläser|glas|scheiben|scheibe|mal|x|×)?\s*$/i);
+    if (endM) { const n = parseFloat(endM[1].replace(',','.')); if (n > 0 && n <= 20) return n; }
+    // Ausgeschriebene Zahlen am Anfang
+    for (const [word, val] of Object.entries(WORD_NUMS)) {
+      if (t.startsWith(word + ' ') && val >= 2) return val;
     }
-    const last = tokens[tokens.length-1];
-    const secondLast = tokens[tokens.length-2];
-    if (UNITS.has(last) && secondLast) {
-      const n = parseFloat(secondLast.replace(',','.'));
-      if (!isNaN(n) && n >= 2 && n <= 20) return n;
-    }
-    const lastN = parseFloat(last.replace(',','.'));
-    if (!isNaN(lastN) && lastN >= 2 && lastN <= 20) return lastN;
     return 1;
   }
 
-  let vol = null;
-  const vm = lo.match(/(\d+(?:[,.]\d+)?)\s*ml|(\d+(?:[,.]\d+)?)\s*l\b/i);
-  if (vm) {
-    if (vm[0].toLowerCase().includes('ml')) {
-      vol = parseFloat((vm[1] || '0').replace(',', '.'));
-    } else {
-      vol = parseFloat((vm[2] || '0').replace(',', '.')) * 1000;
+  // ── Getränke-Volumen-Extraktion ───────────────────────────────────────────
+  // Bei Getränken: Dezimalzahl < 2 ohne Einheit = Liter
+  function extractDrinkVolume(text, defaultVol) {
+    const t = text.toLowerCase();
+    // Explizites ml
+    const mlM = t.match(/(\d+(?:[,.]\d+)?)\s*ml/i);
+    if (mlM) return parseFloat(mlM[1].replace(',','.'));
+    // Explizites l
+    const lM = t.match(/(\d+(?:[,.]\d+)?)\s*l(?:iter)?\b/i);
+    if (lM) return parseFloat(lM[1].replace(',','.')) * 1000;
+    // Dezimalzahl < 2 ohne Einheit = Liter (typisch für Getränke: 0,3 Bier = 0,3l)
+    const implM = t.match(/(?:^|\s)(\d+[,.]\d+)(?:\s|$)/);
+    if (implM) {
+      const n = parseFloat(implM[1].replace(',','.'));
+      if (n < 2) return n * 1000;
     }
+    // Ganzzahl als Multiplikator für Getränke (2 Bier = 2 × Standardvolumen)
+    const intM = t.match(/(?:^|\s)(\d+)(?:\s|$)/);
+    if (intM) {
+      const n = parseInt(intM[1]);
+      if (n >= 2 && n <= 10) return defaultVol * n;
+    }
+    return null;
   }
 
-  const gmul = getMul(lo);
+  // Plural normalisieren
+  const loNorm = normalizePlural(lo);
 
+  // Getränke prüfen
   for (const d of DRINKS) {
     for (const pat of d.p) {
       const rx = new RegExp('\\b' + pat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-      if (rx.test(lo)) {
-        const fv = (vol || d.v) * gmul;
+      if (rx.test(loNorm)) {
+        const vol = extractDrinkVolume(lo, d.v);
+        const fv = vol !== null ? vol : d.v;
         r.k = Math.round((fv / 100) * d.k);
         r.kh = Math.round((fv / 100) * d.kh * 10) / 10;
         return r;
@@ -494,20 +553,44 @@ function parse(raw) {
     }
   }
 
-  const mul = getMul(lo);
+  // Essen prüfen
+  const mul = manK ? 1 : extractAmount(loNorm);
 
   for (const [name, kcal, kh] of FOOD) {
     const rx = name.includes(' ')
       ? new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       : new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-    if (rx.test(lo)) {
+    if (rx.test(loNorm)) {
       r.k = Math.round((manK ? parseInt(manK[1]) : kcal) * mul);
       r.kh = Math.round(((manKH ? parseFloat(manKH[1]) : kh) * mul) * 10) / 10;
       return r;
     }
   }
 
-  if (manK) r.k = parseInt(manK[1]);
+  // Gelernte Gerichte prüfen
+  if (LEARNED && Object.keys(LEARNED).length > 0) {
+    for (const [name, vals] of Object.entries(LEARNED)) {
+      const rx = new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      if (rx.test(loNorm)) {
+        r.k = Math.round(vals.k * mul);
+        r.kh = Math.round((vals.kh * mul) * 10) / 10;
+        return r;
+      }
+    }
+  }
+
+  if (manK) {
+    r.k = parseInt(manK[1]);
+    // Lernfunktion: unbekanntes Gericht mit manueller Kalorienzahl merken
+    const cleanLabel = lo
+      .replace(/(\d+)\s*(kcal|kalorien|cal)/gi, '')
+      .replace(/(\d+)\s*g?\s*(kh|kohlenhydrate)/gi, '')
+      .replace(/\s+/g, ' ').trim();
+    if (cleanLabel.length > 2 && !LEARNED[cleanLabel]) {
+      LEARNED[cleanLabel] = { k: r.k, kh: manKH ? parseInt(manKH[1]) : 0 };
+      saveLearned();
+    }
+  }
   if (manKH) r.kh = parseInt(manKH[1]);
   return r;
 }
@@ -863,6 +946,7 @@ function saveToken() {
 
 // Alles laden und dann rendern
 (async () => {
+  loadLearned();
   if (!GH_TOKEN) {
     document.getElementById('tokenSetup').style.display = 'block';
   }
