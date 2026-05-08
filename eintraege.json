@@ -1048,5 +1048,15 @@
     "kh": 47.5,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1778228336171,
+    "date": "07.05.2026",
+    "time": "18:30",
+    "label": "große Pizza Margherita",
+    "k": 800,
+    "kh": 95,
+    "min": 0,
+    "burned": 0
   }
 ]
