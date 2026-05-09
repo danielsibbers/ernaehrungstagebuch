@@ -1168,5 +1168,15 @@
     "kh": 76,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1778355677607,
+    "date": "09.05.2026",
+    "time": "13:00",
+    "label": "Belegtes Brötchen",
+    "k": 200,
+    "kh": 38,
+    "min": 0,
+    "burned": 0
   }
 ]
