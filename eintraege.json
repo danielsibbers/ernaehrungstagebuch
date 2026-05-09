@@ -1118,5 +1118,15 @@
     "kh": 3.9,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1778306271045,
+    "date": "08.05.2026",
+    "time": "21:00",
+    "label": "alkoholfreies Bier 0,5",
+    "k": 100,
+    "kh": 22.5,
+    "min": 0,
+    "burned": 0
   }
 ]
