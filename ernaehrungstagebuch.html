@@ -470,6 +470,20 @@ function parse(raw) {
       .replace(/\bgarnelen\b/gi, 'garnelen'); // unveränderlich
   }
 
+  // ── Größen-Modifier ───────────────────────────────────────────────────────
+  function extractSize(text) {
+    const t = text.trim().toLowerCase();
+    if (/\b(mini|sehr\s+klein|winzig)\b/.test(t)) return 0.5;
+    if (/\b(klein[eaos]?|kleine\s+portion|kleiner\s+teller|kleine\s+schale)\b/.test(t)) return 0.75;
+    if (/\b(gro[sß][eaos]?|große\s+portion|großer\s+teller|große\s+schale|extra\s+gro[sß])\b/.test(t)) return 1.25;
+    if (/\b(riesig[eaos]?|xxl|mega\s+gro[sß])\b/.test(t)) return 1.5;
+    // Auch am Ende ohne Flexion: "Lasagne groß", "Salat groß"
+    if (/\s+gro[sß]$/.test(t)) return 1.25;
+    if (/\s+klein$/.test(t)) return 0.75;
+    if (/\s+mini$/.test(t)) return 0.5;
+    return 1;
+  }
+
   // ── Mengen-Extraktion ─────────────────────────────────────────────────────
   // Erkennt Mengen in allen Positionen und Formaten
   const UNITS_SET = new Set(['stück','portionen','portion','teller','gläser','glas',
@@ -553,8 +567,9 @@ function parse(raw) {
     }
   }
 
-  // Essen prüfen
-  const mul = manK ? 1 : extractAmount(loNorm);
+  // Essen prüfen — Menge × Größe kombinieren
+  const sizeMul = extractSize(loNorm);
+  const mul = manK ? 1 : extractAmount(loNorm) * sizeMul;
 
   for (const [name, kcal, kh] of FOOD) {
     const rx = name.includes(' ')
