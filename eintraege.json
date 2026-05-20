@@ -1648,5 +1648,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779306441606,
+    "date": "12.05.2026",
+    "time": "18:00",
+    "label": "Gnocchi gebraten (800 Kcal)",
+    "k": 800,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
