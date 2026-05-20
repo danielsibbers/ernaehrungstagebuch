@@ -1268,5 +1268,15 @@
     "kh": 45,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779303790656,
+    "date": "20.05.2026",
+    "time": "19:00",
+    "label": "1/2 Blech Flammkuchen (500 Kcal)",
+    "k": 500,
+    "kh": 35,
+    "min": 0,
+    "burned": 0
   }
 ]
