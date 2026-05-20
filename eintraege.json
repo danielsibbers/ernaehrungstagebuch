@@ -1558,5 +1558,15 @@
     "kh": 0,
     "min": 40,
     "burned": 300
+  },
+  {
+    "id": 1779305157826,
+    "date": "15.05.2026",
+    "time": "19:00",
+    "label": "Gemüse, Brot und Burrata (600 Kcal)",
+    "k": 600,
+    "kh": 2,
+    "min": 0,
+    "burned": 0
   }
 ]
