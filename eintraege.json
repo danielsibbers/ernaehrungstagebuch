@@ -1448,5 +1448,15 @@
     "kh": 18,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779304544674,
+    "date": "14.05.2026",
+    "time": "19:00",
+    "label": "Schawarma-Rolle, geteilt (600 kcal)",
+    "k": 600,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
