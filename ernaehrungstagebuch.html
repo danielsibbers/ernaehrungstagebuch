@@ -70,6 +70,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .day-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--text); color: white; border-radius: var(--radius) var(--radius) 0 0; }
 .day-header-left { font-size: 13px; font-weight: 500; }
 .day-header-right { font-size: 12px; opacity: .7; }
+.saldo-badge { display:inline-block; padding:2px 9px; border-radius:10px; font-size:12px; font-weight:600; }
+.saldo-pos { background:#1a7a3a; color:#fff; }
+.saldo-neg { background:#cc2200; color:#fff; }
 .day-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; table-layout: fixed; }
 .day-table thead tr { border-bottom: 1px solid var(--border); background: #fafaf8; }
 .day-table th { padding: 9px 10px; text-align: left; font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); overflow: hidden; }
@@ -108,6 +111,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="header-left">
       <h1>Mein <em>Ernährungs</em>tagebuch</h1>
       <div class="header-date" id="headerDate"></div>
+      <div id="gesamtsaldoTitle" style="font-size:13px;margin-top:5px;display:none">
+        Gesamtsaldo: <span id="sGesamtsaldo" style="font-weight:500"></span>
+        <span id="sGesamtsaldoSub" style="color:var(--muted);margin-left:4px"></span>
+      </div>
     </div>
     <div class="btn-row">
       <button class="import-btn" onclick="document.getElementById('importFileInput').click()">↑ Importieren</button>
@@ -124,20 +131,33 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="bar-track"><div class="bar-fill" id="barKcal" style="width:0%"></div></div>
     </div>
     <div class="stat">
-      <div class="stat-label">Kohlenhydrate</div>
-      <div class="stat-value" id="sKh">0g</div>
-      <div class="stat-sub" id="sKhSub">0 % von 300g</div>
-      <div class="bar-track"><div class="bar-fill" id="barKh" style="width:0%"></div></div>
-    </div>
-    <div class="stat">
       <div class="stat-label">Sport heute</div>
-      <div class="stat-value" id="sSport">0</div>
-      <div class="stat-sub" id="sBurned">min · 0 kcal verbrannt</div>
+      <div class="stat-value" id="sSport">0 min</div>
+      <div class="stat-sub" id="sBurned">0 kcal verbrannt</div>
     </div>
     <div class="stat">
-      <div class="stat-label">Einträge heute</div>
-      <div class="stat-value" id="sCount">0</div>
-      <div class="stat-sub" id="sNet">Netto: 0 kcal</div>
+      <div class="stat-label">Restbudget heute</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span class="stat-value" id="sDefizit" style="color:var(--accent)">1500</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span class="stat-value" id="sRestbudget" style="font-size:1.4rem;color:var(--accent)">2000</span>
+      </div>
+      <div class="stat-sub" id="sRestbudgetSub">kcal verbleibend</div>
+    </div>
+    <div class="stat" style="background:#f0f0ee;border-color:#d8d4cc">
+      <div class="stat-label">7-Tages-Zeitraum</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span class="stat-value" id="s7Ziel" style="color:var(--accent)">–</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span class="stat-value" id="s7Erhalt" style="font-size:1.4rem;color:var(--accent)">–</span>
+      </div>
+      <div class="stat-sub" id="s7Sub">–</div>
     </div>
   </div>
 
@@ -412,6 +432,19 @@ function parse(raw) {
   const lo = clean.toLowerCase().trim();
   const r = { k: 0, kh: 0, min: 0, burned: 0, label: clean };
 
+  // Manueller Verbrauch: "Krafttraining (-453 kcal)" oder "Krafttraining (Verbrauch 453 kcal)"
+  const manBurnedNeg = lo.match(/\(\s*-\s*(\d+)\s*(?:kcal|kalorien|cal)?\s*\)/i);
+  const manBurnedPos = lo.match(/\(\s*verbrauch\s+(\d+)\s*(?:kcal|kalorien|cal)?\s*\)/i);
+  if (manBurnedNeg || manBurnedPos) {
+    const burned = parseInt((manBurnedNeg || manBurnedPos)[1]);
+    r.burned = burned;
+    r.min = 0;
+    r.label = clean.replace(/\(\s*-\s*\d+\s*(?:kcal|kalorien|cal)?\s*\)/gi, '')
+                   .replace(/\(\s*verbrauch\s+\d+\s*(?:kcal|kalorien|cal)?\s*\)/gi, '')
+                   .trim();
+    return r;
+  }
+
   for (const s of SPORT) {
     const m = lo.match(s.r);
     if (m) {
@@ -473,14 +506,10 @@ function parse(raw) {
   // ── Größen-Modifier ───────────────────────────────────────────────────────
   function extractSize(text) {
     const t = text.trim().toLowerCase();
-    if (/\b(mini|sehr\s+klein|winzig)\b/.test(t)) return 0.5;
-    if (/\b(klein[eaos]?|kleine\s+portion|kleiner\s+teller|kleine\s+schale)\b/.test(t)) return 0.75;
-    if (/\b(gro[sß][eaos]?|große\s+portion|großer\s+teller|große\s+schale|extra\s+gro[sß])\b/.test(t)) return 1.25;
-    if (/\b(riesig[eaos]?|xxl|mega\s+gro[sß])\b/.test(t)) return 1.5;
-    // Auch am Ende ohne Flexion: "Lasagne groß", "Salat groß"
-    if (/\s+gro[sß]$/.test(t)) return 1.25;
-    if (/\s+klein$/.test(t)) return 0.75;
-    if (/\s+mini$/.test(t)) return 0.5;
+    if (/\b(mini|sehr\s+klein\w*|winzig\w*)\b/.test(t)) return 0.5;
+    if (/\bklein\w*\b/.test(t)) return 0.75;
+    if (/\bgro[sß]\w*\b/.test(t) || /\bgro[sß]$/.test(t) || /\bgro[sß]\s/.test(t)) return 1.25;
+    if (/\b(riesig\w*|xxl|mega\s+gro[sß]\w*)\b/.test(t)) return 1.5;
     return 1;
   }
 
@@ -856,22 +885,74 @@ function render() {
 
   document.getElementById('sKcal').textContent = tK;
   document.getElementById('sKcalSub').textContent = Math.round(tK / GOAL_KCAL * 100) + ' % von 2000 kcal';
-  document.getElementById('sKh').textContent = tKH + 'g';
-  document.getElementById('sKhSub').textContent = Math.round(tKH / GOAL_KH * 100) + ' % von 300g';
-  document.getElementById('sSport').textContent = tMin;
-  document.getElementById('sBurned').textContent = 'min · ' + tB + ' kcal verbrannt';
-  document.getElementById('sCount').textContent = todayE.length;
-  document.getElementById('sNet').textContent = 'Netto: ' + netto + ' kcal';
+  document.getElementById('sSport').textContent = tMin + ' min';
+  document.getElementById('sBurned').textContent = tB + ' kcal verbrannt';
+
+  const DEFIZIT_ZIEL = 500;
+  const restbudget = GOAL_KCAL + tB - tK;
+  const defizit = GOAL_KCAL - DEFIZIT_ZIEL + tB - tK;
+  const rbEl = document.getElementById('sRestbudget');
+  const rbSubEl = document.getElementById('sRestbudgetSub');
+  const dfEl = document.getElementById('sDefizit');
+  rbEl.textContent = (restbudget < 0 ? '−' : '') + Math.abs(restbudget);
+  rbEl.style.color = restbudget >= 0 ? '#1a7a3a' : '#cc2200';
+  dfEl.textContent = (defizit < 0 ? '−' : '') + Math.abs(defizit);
+  dfEl.style.color = defizit >= 0 ? '#1a7a3a' : '#cc2200';
+  rbSubEl.textContent = restbudget >= 0 ? 'kcal verbleibend' : 'kcal überschritten';
+
+  // Gesamtsaldo im Titel
+  const totalAllK = entries.reduce((s, e) => s + (e.k || 0), 0);
+  const totalAllB = entries.reduce((s, e) => s + (e.burned || 0), 0);
+  const uniqueDays = new Set(entries.map(e => e.date)).size;
+  const gesamtsaldo = (GOAL_KCAL * uniqueDays) + totalAllB - totalAllK;
+  const gsEl = document.getElementById('sGesamtsaldo');
+  const gsSubEl = document.getElementById('sGesamtsaldoSub');
+  if (uniqueDays > 0) {
+    document.getElementById('gesamtsaldoTitle').style.display = 'block';
+    gsEl.textContent = Math.abs(gesamtsaldo);
+    gsEl.style.color = gesamtsaldo >= 0 ? '#1a7a3a' : '#cc2200';
+    const allDates = [...new Set(entries.map(e => e.date))].sort((a,b) => new Date(deToISO(a)) - new Date(deToISO(b)));
+    const first = allDates[0], last = allDates[allDates.length-1];
+    const fy = first.split('.')[2], ly = last.split('.')[2];
+    const firstStr = fy === ly ? first.slice(0,6) : first;
+    gsSubEl.textContent = uniqueDays === 1 ? first : '(' + firstStr + ' – ' + last + ')';
+  }
+
+  // Letzte 7 Tage — immer 7 volle Tage als Basis
+  const today7 = new Date();
+  const sevenDaysAgo = new Date(today7);
+  sevenDaysAgo.setDate(today7.getDate() - 6);
+  sevenDaysAgo.setHours(0,0,0,0);
+  const last7Entries = entries.filter(e => {
+    const d = new Date(deToISO(e.date));
+    return d >= sevenDaysAgo && d <= today7;
+  });
+  const last7Days = new Set(last7Entries.map(e => e.date)).size;
+  if (last7Days > 0) {
+    const l7K = last7Entries.reduce((s,e) => s+(e.k||0), 0);
+    const l7B = last7Entries.reduce((s,e) => s+(e.burned||0), 0);
+    // Basis immer 7 Tage — auch Tage ohne Einträge zählen ins Budget
+    const l7Ziel = (GOAL_KCAL - DEFIZIT_ZIEL) * 7 + l7B - l7K;
+    const l7Erhalt = GOAL_KCAL * 7 + l7B - l7K;
+    const z7El = document.getElementById('s7Ziel');
+    const e7El = document.getElementById('s7Erhalt');
+    z7El.textContent = (l7Ziel < 0 ? '−' : '') + Math.abs(l7Ziel);
+    z7El.style.color = l7Ziel >= 0 ? '#1a7a3a' : '#cc2200';
+    e7El.textContent = (l7Erhalt < 0 ? '−' : '') + Math.abs(l7Erhalt);
+    e7El.style.color = l7Erhalt >= 0 ? '#1a7a3a' : '#cc2200';
+    const l7Dates = [...new Set(last7Entries.map(e => e.date))].sort((a,b) => new Date(deToISO(a)) - new Date(deToISO(b)));
+    const missingDays = 7 - last7Days;
+    const startDate = l7Dates[0];
+    const s7Sub = document.getElementById('s7Sub');
+    s7Sub.innerHTML = `kcal verbleibend seit ${startDate}` + (missingDays > 0
+      ? `<br><span style="color:#BA7517">⚠ ${missingDays} Tag${missingDays > 1 ? 'e' : ''} ohne Einträge</span>`
+      : '');
+  }
 
   const pK = Math.min(tK / GOAL_KCAL * 100, 100);
   const bK = document.getElementById('barKcal');
   bK.style.width = pK + '%';
   bK.className = 'bar-fill' + (tK > GOAL_KCAL ? ' over' : tK > GOAL_KCAL * 0.85 ? ' warn' : '');
-
-  const pKH = Math.min(tKH / GOAL_KH * 100, 100);
-  const bKH = document.getElementById('barKh');
-  bKH.style.width = pKH + '%';
-  bKH.className = 'bar-fill' + (tKH > GOAL_KH ? ' over' : tKH > GOAL_KH * 0.85 ? ' warn' : '');
 
   const byDate = {};
   entries.forEach(e => { if (!byDate[e.date]) byDate[e.date] = []; byDate[e.date].push(e); });
@@ -886,10 +967,18 @@ function render() {
     const dMin = de.reduce((s, e) => s + (e.min || 0), 0);
     const dB = de.reduce((s, e) => s + (e.burned || 0), 0);
     const isToday = date === todayDE;
+    const saldoErhalt = GOAL_KCAL + dB - dK;
+    const saldoZiel = GOAL_KCAL - DEFIZIT_ZIEL + dB - dK;
+    const khPct = Math.round(dKH / GOAL_KH * 100);
+
     html += `<div class="day-block">
       <div class="day-header">
         <div class="day-header-left">${fmtDate(date)}${isToday ? ' · heute' : ''}</div>
-        <div class="day-header-right">${dK} kcal · ${dKH}g KH${dMin > 0 ? ' · ' + dMin + ' min Sport' : ''}</div>
+        <div class="day-header-right" style="display:flex;align-items:center;gap:8px;opacity:1">
+          <span>${dK} kcal${dMin > 0 ? ' · ' + dMin + ' min Sport' : ''}</span>
+          <span class="saldo-badge ${saldoZiel >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400">bis Ziel: ${saldoZiel < 0 ? '−' : ''}${Math.abs(saldoZiel)}</span>
+          <span class="saldo-badge ${saldoErhalt >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400;opacity:0.8">für Erhalt: ${saldoErhalt < 0 ? '−' : ''}${Math.abs(saldoErhalt)}</span>
+        </div>
       </div>
       <table class="day-table">
         <colgroup>
@@ -927,9 +1016,10 @@ function render() {
       </tr>`;
     }
     html += `<tr class="sum-row">
-        <td></td><td>Tagessumme</td>
+        <td></td>
+        <td>Tagessumme</td>
         <td class="r">${dK}</td>
-        <td class="r">${dKH}g</td>
+        <td class="r">${dKH}g <span style="opacity:.7;font-size:11px">(${khPct}%)</span></td>
         <td class="r">${dMin || '–'}</td>
         <td class="r">${dB || '–'}</td>
         <td></td>
