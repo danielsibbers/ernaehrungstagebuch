@@ -1768,5 +1768,15 @@
     "kh": 0,
     "min": 30,
     "burned": 240
+  },
+  {
+    "id": 1779356202935,
+    "date": "21.05.2026",
+    "time": "07:00",
+    "label": "Krafttraining (Verbrauch 487 Kcal)",
+    "k": 487,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
