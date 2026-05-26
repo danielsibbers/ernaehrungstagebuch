@@ -2088,5 +2088,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779810865623,
+    "date": "25.05.2026",
+    "time": "09:00",
+    "label": "Frühstücksbuffet (1000 kcal)",
+    "k": 1000,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
