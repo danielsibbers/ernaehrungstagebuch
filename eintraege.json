@@ -2188,5 +2188,15 @@
     "kh": 47.5,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779908804697,
+    "date": "27.05.2026",
+    "time": "19:00",
+    "label": "4 Pfannkuchen mit Belag (1000 Kcal)",
+    "k": 1000,
+    "kh": 40,
+    "min": 0,
+    "burned": 0
   }
 ]
