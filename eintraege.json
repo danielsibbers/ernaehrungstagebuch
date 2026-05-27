@@ -2218,5 +2218,15 @@
     "kh": 0,
     "min": 10,
     "burned": 75
+  },
+  {
+    "id": 1779908894282,
+    "date": "27.05.2026",
+    "time": "17:00",
+    "label": "Rhabarberschorle 0,3l",
+    "k": 0,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
