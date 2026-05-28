@@ -2228,5 +2228,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1779954321196,
+    "date": "27.05.2026",
+    "time": "09:00",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
   }
 ]
