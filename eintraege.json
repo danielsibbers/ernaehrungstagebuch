@@ -2150,16 +2150,6 @@
     "burned": 0
   },
   {
-    "id": 1779864246314,
-    "date": "27.05.2026",
-    "time": "08:44",
-    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
-    "k": 380,
-    "kh": 45,
-    "min": 0,
-    "burned": 0
-  },
-  {
     "id": 1779897206263,
     "date": "27.05.2026",
     "time": "13:00",
@@ -2238,25 +2228,5 @@
     "kh": 45,
     "min": 0,
     "burned": 0
-  },
-  {
-    "id": 1779954366701,
-    "date": "27.05.2026",
-    "time": "07:00",
-    "label": "Krafttraining 60 min",
-    "k": 0,
-    "kh": 0,
-    "min": 60,
-    "burned": 564
-  },
-  {
-    "id": 1779954379147,
-    "date": "27.05.2026",
-    "time": "07:00",
-    "label": "Krafttraining 45 min",
-    "k": 0,
-    "kh": 0,
-    "min": 45,
-    "burned": 423
   }
 ]
