@@ -1237,22 +1237,61 @@ function renderCharts() {
     type: 'line',
     data: {
       labels,
-      datasets: [{
-        data: cumData,
-        borderColor: '#3B6D11',
-        backgroundColor: 'rgba(59,109,17,0.07)',
-        fill: true, tension: 0.3,
-        pointRadius: cumData.map(v => v === null ? 0 : 3),
-        pointBackgroundColor: cumData.map(v => v === null ? 'transparent' : v >= 0 ? '#3B6D11' : '#A32D2D'),
-        borderWidth: 2, spanGaps: true
-      }]
+      datasets: [
+        {
+          data: cumData,
+          borderColor: ctx => {
+            const v = cumData[ctx.p0DataIndex];
+            return v >= 0 ? '#3B6D11' : '#A32D2D';
+          },
+          segment: {
+            borderColor: ctx => cumData[ctx.p0DataIndex] >= 0 ? '#3B6D11' : '#A32D2D',
+          },
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.3,
+          pointRadius: cumData.map(v => v === null ? 0 : 3),
+          pointBackgroundColor: cumData.map(v => v === null ? 'transparent' : v >= 0 ? '#3B6D11' : '#A32D2D'),
+          borderWidth: 2,
+          spanGaps: true,
+          order: 1
+        },
+        {
+          // Grüne Fläche oberhalb Null
+          data: cumData.map(v => v === null ? null : Math.max(0, v)),
+          backgroundColor: 'rgba(59,109,17,0.12)',
+          borderWidth: 0,
+          pointRadius: 0,
+          fill: { target: { value: 0 }, above: 'rgba(59,109,17,0.12)', below: 'transparent' },
+          tension: 0.3,
+          spanGaps: true,
+          order: 2
+        },
+        {
+          // Rote Fläche unterhalb Null
+          data: cumData.map(v => v === null ? null : Math.min(0, v)),
+          backgroundColor: 'rgba(163,45,45,0.12)',
+          borderWidth: 0,
+          pointRadius: 0,
+          fill: { target: { value: 0 }, above: 'transparent', below: 'rgba(163,45,45,0.12)' },
+          tension: 0.3,
+          spanGaps: true,
+          order: 2
+        }
+      ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw === null ? '' : (ctx.raw >= 0 ? '+' : '') + ctx.raw + ' kcal Puffer' } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.datasetIndex !== 0 ? '' : ctx.raw === null ? '' : (ctx.raw >= 0 ? '+' : '') + ctx.raw + ' kcal Puffer' } } },
       scales: {
         x: { ticks: { font:{size:10}, autoSkip: true, maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
-        y: { ticks: { font:{size:10}, callback: v => (v > 0 ? '+' : '') + v }, grid: { color: ctx => ctx.tick.value === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.04)' } }
+        y: {
+          ticks: { font:{size:10}, callback: v => (v > 0 ? '+' : '') + v },
+          grid: {
+            color: ctx => ctx.tick.value === 0 ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.04)',
+            lineWidth: ctx => ctx.tick.value === 0 ? 2 : 1
+          }
+        }
       }
     }
   });
