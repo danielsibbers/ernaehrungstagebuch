@@ -123,29 +123,25 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
   </div>
 
-  <div class="stats">
+  <div class="stats" style="grid-template-columns:2fr 1fr 1fr">
     <div class="stat">
-      <div class="stat-label">Kalorien heute</div>
-      <div class="stat-value" id="sKcal">0</div>
-      <div class="stat-sub" id="sKcalSub">0 % von 2000 kcal</div>
-      <div class="bar-track"><div class="bar-fill" id="barKcal" style="width:0%"></div></div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Sport heute</div>
-      <div class="stat-value" id="sSport">0 min</div>
-      <div class="stat-sub" id="sBurned">0 kcal verbrannt</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Restbudget heute</div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+      <div class="stat-label">Heute</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
+        <span class="stat-value" id="sKcal">0</span>
+        <span style="font-size:13px;color:var(--muted)">kcal</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:4px" id="sKcalPct">0%</span>
+      </div>
+      <div class="bar-track" style="margin-bottom:7px"><div class="bar-fill" id="barKcal" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px" id="sSportLine">–</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;margin-top:6px">
         <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
-        <span class="stat-value" id="sDefizit" style="color:var(--accent)">1500</span>
+        <span class="stat-value" id="sDefizit" style="color:var(--accent)">–</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline">
         <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
-        <span class="stat-value" id="sRestbudget" style="font-size:1.4rem;color:var(--accent)">2000</span>
+        <span class="stat-value" id="sRestbudget" style="font-size:1.4rem;color:var(--accent)">–</span>
       </div>
-      <div class="stat-sub" id="sRestbudgetSub">kcal verbleibend</div>
+      <div class="stat-sub" id="sRestbudgetSub" style="margin-top:4px"></div>
     </div>
     <div class="stat" style="background:#f0f0ee;border-color:#d8d4cc">
       <div class="stat-label">7-Tages-Zeitraum</div>
@@ -158,6 +154,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <span class="stat-value" id="s7Erhalt" style="font-size:1.4rem;color:var(--accent)">–</span>
       </div>
       <div class="stat-sub" id="s7Sub">–</div>
+    </div>
+    <div class="stat" style="background:#f0f0ee;border-color:#d8d4cc">
+      <div class="stat-label">30-Tages-Zeitraum</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span class="stat-value" id="s30Ziel" style="color:var(--accent)">–</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span class="stat-value" id="s30Erhalt" style="font-size:1.4rem;color:var(--accent)">–</span>
+      </div>
+      <div class="stat-sub" id="s30Sub">–</div>
     </div>
   </div>
 
@@ -188,6 +196,28 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <button onclick="saveToken()" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:8px 16px;cursor:pointer">Speichern</button>
     </div>
   </div>
+  </div>
+
+  <div class="section-title">Verlauf</div>
+  <div style="margin-bottom:1.5rem">
+    <button id="chartToggle" onclick="toggleCharts()" style="font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:20px;padding:6px 16px;cursor:pointer;display:flex;align-items:center;gap:6px">
+      <span id="chartToggleIcon">▸</span> Verlauf anzeigen
+    </button>
+    <div id="chartSection" style="display:none;margin-top:1.25rem">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:500;margin-bottom:6px">Tägliche Kalorienaufnahme — letzte 30 Tage</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:11px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#3B6D11;display:inline-block"></span>unter Ziel</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block"></span>über Ziel, unter Erhalt</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#A32D2D;display:inline-block"></span>über Erhalt</span>
+      </div>
+      <div style="position:relative;width:100%;height:200px">
+        <canvas id="barChart" role="img" aria-label="Balkendiagramm der täglichen Kalorienaufnahme der letzten 30 Tage">Tägliche Kalorienaufnahme der letzten 30 Tage.</canvas>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:500;margin:1.5rem 0 4px">Kumulativer Saldo — positiv = Puffer, negativ = Überschuss</div>
+      <div style="position:relative;width:100%;height:160px">
+        <canvas id="lineChart" role="img" aria-label="Linienchart des kumulativen Tagessaldos.">Kumulativer Saldo.</canvas>
+      </div>
+    </div>
   </div>
 
   <div class="section-title">Einträge nach Tagen</div>
@@ -557,23 +587,28 @@ function parse(raw) {
   // ── Getränke-Volumen-Extraktion ───────────────────────────────────────────
   // Bei Getränken: Dezimalzahl < 2 ohne Einheit = Liter
   function extractDrinkVolume(text, defaultVol) {
-    const t = text.toLowerCase();
-    // Explizites ml
+    const t = text.toLowerCase().trim();
+    // Explizites ml — immer Priorität
     const mlM = t.match(/(\d+(?:[,.]\d+)?)\s*ml/i);
     if (mlM) return parseFloat(mlM[1].replace(',','.'));
     // Explizites l
     const lM = t.match(/(\d+(?:[,.]\d+)?)\s*l(?:iter)?\b/i);
     if (lM) return parseFloat(lM[1].replace(',','.')) * 1000;
-    // Dezimalzahl < 2 ohne Einheit = Liter (typisch für Getränke: 0,3 Bier = 0,3l)
-    const implM = t.match(/(?:^|\s)(\d+[,.]\d+)(?:\s|$)/);
+    // Dezimalzahl (z.B. 0,3 oder 0.5) irgendwo im Text = Liter
+    const implM = t.match(/\b(\d+[,.]\d+)\b/);
     if (implM) {
       const n = parseFloat(implM[1].replace(',','.'));
-      if (n < 2) return n * 1000;
+      if (n > 0 && n < 5) return n * 1000; // 0,3 → 300ml, 1,5 → 1500ml
     }
-    // Ganzzahl als Multiplikator für Getränke (2 Bier = 2 × Standardvolumen)
-    const intM = t.match(/(?:^|\s)(\d+)(?:\s|$)/);
-    if (intM) {
-      const n = parseInt(intM[1]);
+    // Ganzzahl am Anfang oder Ende = Anzahl Portionen
+    const intStartM = t.match(/^(\d+)\s+/);
+    if (intStartM) {
+      const n = parseInt(intStartM[1]);
+      if (n >= 2 && n <= 10) return defaultVol * n;
+    }
+    const intEndM = t.match(/\s+(\d+)$/);
+    if (intEndM) {
+      const n = parseInt(intEndM[1]);
       if (n >= 2 && n <= 10) return defaultVol * n;
     }
     return null;
@@ -883,14 +918,22 @@ function render() {
   const tB = todayE.reduce((s, e) => s + (e.burned || 0), 0);
   const netto = tK - tB;
 
-  document.getElementById('sKcal').textContent = tK;
-  document.getElementById('sKcalSub').textContent = Math.round(tK / GOAL_KCAL * 100) + ' % von 2000 kcal';
-  document.getElementById('sSport').textContent = tMin + ' min';
-  document.getElementById('sBurned').textContent = tB + ' kcal verbrannt';
-
   const DEFIZIT_ZIEL = 500;
+  const GOAL_ZIEL = GOAL_KCAL - DEFIZIT_ZIEL; // 1500
+
+  document.getElementById('sKcal').textContent = tK;
+  document.getElementById('sKcalPct').textContent = Math.round(tK / GOAL_ZIEL * 100) + '%';
+  document.getElementById('sSportLine').textContent = tMin > 0
+    ? tMin + ' min Sport · ' + tB + ' kcal verbrannt'
+    : 'kein Sport heute';
+
+  const pK = Math.min(tK / GOAL_ZIEL * 100, 100);
+  const bK = document.getElementById('barKcal');
+  bK.style.width = pK + '%';
+  bK.className = 'bar-fill' + (tK > GOAL_KCAL ? ' over' : tK > GOAL_ZIEL ? ' warn' : '');
+
   const restbudget = GOAL_KCAL + tB - tK;
-  const defizit = GOAL_KCAL - DEFIZIT_ZIEL + tB - tK;
+  const defizit = GOAL_ZIEL + tB - tK;
   const rbEl = document.getElementById('sRestbudget');
   const rbSubEl = document.getElementById('sRestbudgetSub');
   const dfEl = document.getElementById('sDefizit');
@@ -949,10 +992,33 @@ function render() {
       : '');
   }
 
-  const pK = Math.min(tK / GOAL_KCAL * 100, 100);
-  const bK = document.getElementById('barKcal');
-  bK.style.width = pK + '%';
-  bK.className = 'bar-fill' + (tK > GOAL_KCAL ? ' over' : tK > GOAL_KCAL * 0.85 ? ' warn' : '');
+  // 30-Tage-Zeitraum
+  const thirtyDaysAgo = new Date(today7);
+  thirtyDaysAgo.setDate(today7.getDate() - 29);
+  thirtyDaysAgo.setHours(0,0,0,0);
+  const last30Entries = entries.filter(e => {
+    const d = new Date(deToISO(e.date));
+    return d >= thirtyDaysAgo && d <= today7;
+  });
+  const last30Days = new Set(last30Entries.map(e => e.date)).size;
+  if (last30Days > 0) {
+    const l30K = last30Entries.reduce((s,e) => s+(e.k||0), 0);
+    const l30B = last30Entries.reduce((s,e) => s+(e.burned||0), 0);
+    const l30Ziel = (GOAL_KCAL - DEFIZIT_ZIEL) * 30 + l30B - l30K;
+    const l30Erhalt = GOAL_KCAL * 30 + l30B - l30K;
+    const z30El = document.getElementById('s30Ziel');
+    const e30El = document.getElementById('s30Erhalt');
+    z30El.textContent = (l30Ziel < 0 ? '−' : '') + Math.abs(l30Ziel);
+    z30El.style.color = l30Ziel >= 0 ? '#1a7a3a' : '#cc2200';
+    e30El.textContent = (l30Erhalt < 0 ? '−' : '') + Math.abs(l30Erhalt);
+    e30El.style.color = l30Erhalt >= 0 ? '#1a7a3a' : '#cc2200';
+    const l30Dates = [...new Set(last30Entries.map(e => e.date))].sort((a,b) => new Date(deToISO(a)) - new Date(deToISO(b)));
+    const missing30 = 30 - last30Days;
+    const s30Sub = document.getElementById('s30Sub');
+    s30Sub.innerHTML = `kcal verbleibend seit ${l30Dates[0]}` + (missing30 > 0
+      ? `<br><span style="color:#BA7517">⚠ ${missing30} Tag${missing30 > 1 ? 'e' : ''} ohne Einträge</span>`
+      : '');
+  }
 
   const byDate = {};
   entries.forEach(e => { if (!byDate[e.date]) byDate[e.date] = []; byDate[e.date].push(e); });
@@ -1029,6 +1095,7 @@ function render() {
     </div>`;
   }
   document.getElementById('tableArea').innerHTML = html;
+  setTimeout(renderCharts, 0);
 }
 
 // Init
@@ -1075,9 +1142,120 @@ async function loadDatabaseFromGitHub() {
       document.querySelector('.input-card').appendChild(hint);
     }
   } catch(e) {
-    // Fallback: eingebaute Datenbank wird weitergenutzt, kein Fehler anzeigen
     console.log('Datenbank-Update nicht verfügbar, nutze eingebaute Version');
   }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let barChartInst = null, lineChartInst = null;
+let chartsVisible = false;
+
+function toggleCharts() {
+  chartsVisible = !chartsVisible;
+  const section = document.getElementById('chartSection');
+  const icon = document.getElementById('chartToggleIcon');
+  const btn = document.getElementById('chartToggle');
+  section.style.display = chartsVisible ? 'block' : 'none';
+  icon.textContent = chartsVisible ? '▾' : '▸';
+  btn.textContent = '';
+  btn.appendChild(icon);
+  btn.appendChild(document.createTextNode(' ' + (chartsVisible ? 'Verlauf ausblenden' : 'Verlauf anzeigen')));
+  if (chartsVisible) renderCharts();
+}
+
+function renderCharts() {
+  if (typeof Chart === 'undefined' || !chartsVisible) return;
+  const GOAL_BASE = 1500, ERHALT_BASE = 2000;
+  const today = new Date();
+  const days = [], labels = [], kcalData = [], goalData = [], erhaltData = [];
+
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const de = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+    days.push(de);
+    labels.push(String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.');
+  }
+
+  days.forEach(day => {
+    const dayE = entries.filter(e => e.date === day);
+    if (dayE.length === 0) {
+      kcalData.push(null);
+      goalData.push(GOAL_BASE);
+      erhaltData.push(ERHALT_BASE);
+    } else {
+      const totalK = dayE.reduce((s,e) => s+(e.k||0), 0);
+      const totalB = dayE.reduce((s,e) => s+(e.burned||0), 0);
+      kcalData.push(totalK);
+      goalData.push(GOAL_BASE + totalB);   // Ziel inkl. Sport
+      erhaltData.push(ERHALT_BASE + totalB); // Erhalt inkl. Sport
+    }
+  });
+
+  const barColors = kcalData.map((k, i) =>
+    k === null ? 'rgba(180,180,180,0.25)' :
+    k <= goalData[i] ? '#3B6D11' :
+    k <= erhaltData[i] ? '#BA7517' : '#A32D2D'
+  );
+
+  if (barChartInst) barChartInst.destroy();
+  if (lineChartInst) lineChartInst.destroy();
+
+  barChartInst = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { data: kcalData.map(k => k === null ? 0 : k), backgroundColor: barColors, borderWidth: 0, borderRadius: 2, order: 2 },
+        { data: goalData, type: 'line', borderColor: '#27500A', borderDash: [3,3], borderWidth: 1.5, pointRadius: 0, fill: false, order: 1, label: 'Ziel' },
+        { data: erhaltData, type: 'line', borderColor: '#BA7517', borderDash: [3,3], borderWidth: 1.5, pointRadius: 0, fill: false, order: 1, label: 'Erhalt' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => {
+        if (ctx.datasetIndex === 0) return kcalData[ctx.dataIndex] === null ? 'kein Eintrag' : ctx.raw + ' kcal';
+        return ctx.dataset.label + ': ' + ctx.raw + ' kcal';
+      }}}},
+      scales: {
+        x: { ticks: { font:{size:10}, autoSkip: true, maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
+        y: { min: 0, suggestedMax: 2800, ticks: { font:{size:10} }, grid: { color: 'rgba(0,0,0,0.04)' } }
+      }
+    }
+  });
+
+  // Kumulativer Saldo mit Sport: Ziel = 1500 + verbrannte kcal pro Tag
+  let cum = 0;
+  const cumData = kcalData.map((k, i) => {
+    if (k === null) return null;
+    cum += (goalData[i] - k); // positiv = Puffer
+    return Math.round(cum);
+  });
+
+  lineChartInst = new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: cumData,
+        borderColor: '#3B6D11',
+        backgroundColor: 'rgba(59,109,17,0.07)',
+        fill: true, tension: 0.3,
+        pointRadius: cumData.map(v => v === null ? 0 : 3),
+        pointBackgroundColor: cumData.map(v => v === null ? 'transparent' : v >= 0 ? '#3B6D11' : '#A32D2D'),
+        borderWidth: 2, spanGaps: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw === null ? '' : (ctx.raw >= 0 ? '+' : '') + ctx.raw + ' kcal Puffer' } } },
+      scales: {
+        x: { ticks: { font:{size:10}, autoSkip: true, maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
+        y: { ticks: { font:{size:10}, callback: v => (v > 0 ? '+' : '') + v }, grid: { color: ctx => ctx.tick.value === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.04)' } }
+      }
+    }
+  });
 }
 </script>
 </body>
