@@ -2388,5 +2388,15 @@
     "kh": 45,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1780178863948,
+    "date": "30.05.2026",
+    "time": "19:00",
+    "label": "Belegtes Brot und Salat (400 kcal)",
+    "k": 400,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
   }
 ]
