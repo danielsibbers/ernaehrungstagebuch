@@ -2428,5 +2428,15 @@
     "kh": 20,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1780233492493,
+    "date": "31.05.2026",
+    "time": "14:30",
+    "label": "¼ Leipziger Lerche (60 kcal)",
+    "k": 60,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
