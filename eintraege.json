@@ -2438,5 +2438,15 @@
     "kh": 0,
     "min": 30,
     "burned": 240
+  },
+  {
+    "id": 1780309450201,
+    "date": "01.06.2026",
+    "time": "12:30",
+    "label": "Everything Bagel mit Butter (350 kcal)",
+    "k": 350,
+    "kh": 56,
+    "min": 0,
+    "burned": 0
   }
 ]
