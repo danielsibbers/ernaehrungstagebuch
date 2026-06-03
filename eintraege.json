@@ -2598,5 +2598,15 @@
     "kh": 22.5,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1780516581991,
+    "date": "03.06.2026",
+    "time": "19:00",
+    "label": "Vegetarisches Fingerfood (800 kcal)",
+    "k": 800,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
