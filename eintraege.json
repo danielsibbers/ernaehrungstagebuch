@@ -2668,5 +2668,15 @@
     "kh": 22,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1780643782369,
+    "date": "04.06.2026",
+    "time": "18:00",
+    "label": "Spaghetti Bolognese (800 kcal)",
+    "k": 800,
+    "kh": 72,
+    "min": 0,
+    "burned": 0
   }
 ]
