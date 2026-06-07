@@ -2808,5 +2808,15 @@
     "kh": 32,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1780839801579,
+    "date": "07.06.2026",
+    "time": "09:30",
+    "label": "Baguette mit Butter (500 kcal)",
+    "k": 500,
+    "kh": 92,
+    "min": 0,
+    "burned": 0
   }
 ]
