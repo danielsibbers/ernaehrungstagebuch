@@ -134,11 +134,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="bar-track" style="margin-bottom:7px"><div class="bar-fill" id="barKcal" style="width:0%"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px" id="sSportLine">–</div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;margin-top:6px">
-        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span style="font-size:11px;color:var(--muted)">kcal bis Ziel</span>
         <span class="stat-value" id="sDefizit" style="color:var(--accent)">–</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span style="font-size:11px;color:var(--muted)">Defizit gesamt</span>
         <span class="stat-value" id="sRestbudget" style="font-size:1.4rem;color:var(--accent)">–</span>
       </div>
       <div class="stat-sub" id="sRestbudgetSub" style="margin-top:4px"></div>
@@ -146,11 +146,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="stat" style="background:#f0f0ee;border-color:#d8d4cc">
       <div class="stat-label">7-Tages-Zeitraum</div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span style="font-size:11px;color:var(--muted)">kcal bis Ziel</span>
         <span class="stat-value" id="s7Ziel" style="color:var(--accent)">–</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span style="font-size:11px;color:var(--muted)">Defizit gesamt</span>
         <span class="stat-value" id="s7Erhalt" style="font-size:1.4rem;color:var(--accent)">–</span>
       </div>
       <div class="stat-sub" id="s7Sub">–</div>
@@ -158,11 +158,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="stat" style="background:#f0f0ee;border-color:#d8d4cc">
       <div class="stat-label">30-Tages-Zeitraum</div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <span style="font-size:11px;color:var(--muted)">bis Ziel</span>
+        <span style="font-size:11px;color:var(--muted)">kcal bis Ziel</span>
         <span class="stat-value" id="s30Ziel" style="color:var(--accent)">–</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <span style="font-size:11px;color:var(--muted)">für Erhalt</span>
+        <span style="font-size:11px;color:var(--muted)">Defizit gesamt</span>
         <span class="stat-value" id="s30Erhalt" style="font-size:1.4rem;color:var(--accent)">–</span>
       </div>
       <div class="stat-sub" id="s30Sub">–</div>
@@ -262,11 +262,12 @@ let FOOD = [
   ['großer börek',420,35],['grosser börek',420,35],['börek groß',420,35],['börek gross',420,35],
   ['kleiner börek',200,18],['börek klein',200,18],
   ['börek',300,25],
-  ['großer salat',450,27],['grosser salat',450,27],['salat groß',450,27],['salat gross',450,27],['salat (groß)',450,27],
   ['caesar salat',450,30],['gemischter salat',320,20],['salatteller',350,22],
   ['grüner salat',150,12],['griechischer salat',320,18],
   ['salat mit hähnchen',450,20],['salat mit schafskäse',380,20],['salat mit feta',380,20],
-  ['salat mit avocado',420,25],['salat',280,18],['beilagensalat',80,6],
+  ['salat mit avocado',420,25],
+  ['großer salat',450,27],['grosser salat',450,27],['salat groß',450,27],['salat gross',450,27],['salat (groß)',450,27],
+  ['salat',280,18],['beilagensalat',80,6],
   ['spargelrisotto',420,55],['spargel risotto',420,55],
   ['lasagne',580,45],['lasagne al forno',580,45],['vegane lasagne',480,48],['vegetarische lasagne',500,50],
   ['pasta',360,72],['spaghetti',360,72],['nudeln',360,72],['penne',360,72],['fusilli',360,72],
@@ -322,6 +323,7 @@ let FOOD = [
   ['große antipasti',400,12],['grosse antipasti',400,12],['antipasti groß',400,12],['antipasti gross',400,12],
   ['kleine antipasti',200,6],['antipasti klein',200,6],
   ['portion antipasti',300,9],['antipasti portion',300,9],['antipasti',300,9],
+  ['möhren',35,8],['möhre',35,8],['mohrrüben',35,8],['mohrrübe',35,8],['karotten',35,8],['karotte',35,8],
   ['bruschetta',85,12],['oliven',115,6],
   ['garnelen',85,1],['lachs',180,0],
   // Würstchen
@@ -630,13 +632,19 @@ function parse(raw) {
 
   // Essen prüfen — Menge × Größe kombinieren
   const sizeMul = extractSize(loNorm);
-  const mul = manK ? 1 : extractAmount(loNorm) * sizeMul;
+  const amountMul = extractAmount(loNorm);
+
+  // Größenwörter die in DB-Einträgen vorkommen — wenn der Eintrag selbst schon groß/klein enthält, kein sizeMul
+  const SIZE_WORDS = /\b(groß|gross|große|grosser|großer|klein|kleine|kleiner|kleines|mini|xxl)\b/i;
 
   for (const [name, kcal, kh] of FOOD) {
     const rx = name.includes(' ')
       ? new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       : new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
     if (rx.test(loNorm)) {
+      // Wenn der DB-Eintrag selbst ein Größenwort enthält, sizeMul nicht nochmal anwenden
+      const effectiveSizeMul = SIZE_WORDS.test(name) ? 1 : sizeMul;
+      const mul = manK ? 1 : amountMul * effectiveSizeMul;
       r.k = Math.round((manK ? parseInt(manK[1]) : kcal) * mul);
       r.kh = Math.round(((manKH ? parseFloat(manKH[1]) : kh) * mul) * 10) / 10;
       return r;
@@ -648,6 +656,8 @@ function parse(raw) {
     for (const [name, vals] of Object.entries(LEARNED)) {
       const rx = new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
       if (rx.test(loNorm)) {
+        const effectiveSizeMul = SIZE_WORDS.test(name) ? 1 : sizeMul;
+        const mul = manK ? 1 : amountMul * effectiveSizeMul;
         r.k = Math.round(vals.k * mul);
         r.kh = Math.round((vals.kh * mul) * 10) / 10;
         return r;
@@ -938,7 +948,7 @@ function render() {
   rbEl.style.color = restbudget >= 0 ? '#1a7a3a' : '#cc2200';
   dfEl.textContent = (defizit < 0 ? '−' : '') + Math.abs(defizit);
   dfEl.style.color = defizit >= 0 ? '#1a7a3a' : '#cc2200';
-  rbSubEl.textContent = restbudget >= 0 ? 'kcal verbleibend' : 'kcal überschritten';
+  rbSubEl.textContent = restbudget >= 0 ? '' : 'kcal überschritten';
 
   // Gesamtsaldo im Titel
   const totalAllK = entries.reduce((s, e) => s + (e.k || 0), 0);
@@ -984,7 +994,7 @@ function render() {
     const missingDays = 7 - last7Days;
     const startDate = l7Dates[0];
     const s7Sub = document.getElementById('s7Sub');
-    s7Sub.innerHTML = `kcal verbleibend seit ${startDate}` + (missingDays > 0
+    s7Sub.innerHTML = `seit ${startDate}` + (missingDays > 0
       ? `<br><span style="color:#BA7517">⚠ ${missingDays} Tag${missingDays > 1 ? 'e' : ''} ohne Einträge</span>`
       : '');
   }
@@ -1012,7 +1022,7 @@ function render() {
     const l30Dates = [...new Set(last30Entries.map(e => e.date))].sort((a,b) => new Date(deToISO(a)) - new Date(deToISO(b)));
     const missing30 = 30 - last30Days;
     const s30Sub = document.getElementById('s30Sub');
-    s30Sub.innerHTML = `kcal verbleibend seit ${l30Dates[0]}` + (missing30 > 0
+    s30Sub.innerHTML = `seit ${l30Dates[0]}` + (missing30 > 0
       ? `<br><span style="color:#BA7517">⚠ ${missing30} Tag${missing30 > 1 ? 'e' : ''} ohne Einträge</span>`
       : '');
   }
@@ -1039,8 +1049,8 @@ function render() {
         <div class="day-header-left">${fmtDate(date)}${isToday ? ' · heute' : ''}</div>
         <div class="day-header-right" style="display:flex;align-items:center;gap:8px;opacity:1">
           <span>${dK} kcal${dMin > 0 ? ' · ' + dMin + ' min Sport' : ''}</span>
-          <span class="saldo-badge ${saldoZiel >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400">bis Ziel: ${saldoZiel < 0 ? '−' : ''}${Math.abs(saldoZiel)}</span>
-          <span class="saldo-badge ${saldoErhalt >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400;opacity:0.8">für Erhalt: ${saldoErhalt < 0 ? '−' : ''}${Math.abs(saldoErhalt)}</span>
+          <span class="saldo-badge ${saldoZiel >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400">kcal bis Ziel: ${saldoZiel < 0 ? '−' : ''}${Math.abs(saldoZiel)}</span>
+          <span class="saldo-badge ${saldoErhalt >= 0 ? 'saldo-pos' : 'saldo-neg'}" style="font-weight:400;opacity:0.8">Defizit gesamt: ${saldoErhalt < 0 ? '−' : ''}${Math.abs(saldoErhalt)}</span>
         </div>
       </div>
       <table class="day-table">
@@ -1346,6 +1356,9 @@ function renderCharts() {
     }]
   });
 }
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
