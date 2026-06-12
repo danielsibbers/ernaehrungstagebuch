@@ -3168,5 +3168,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1781282725208,
+    "date": "12.06.2026",
+    "time": "17:30",
+    "label": "Spekulationswaffel (250 kcal)",
+    "k": 250,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
