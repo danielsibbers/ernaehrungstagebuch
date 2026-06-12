@@ -323,7 +323,7 @@ let FOOD = [
   ['große antipasti',400,12],['grosse antipasti',400,12],['antipasti groß',400,12],['antipasti gross',400,12],
   ['kleine antipasti',200,6],['antipasti klein',200,6],
   ['portion antipasti',300,9],['antipasti portion',300,9],['antipasti',300,9],
-  ['möhren',35,8],['möhre',35,8],['mohrrüben',35,8],['mohrrübe',35,8],['karotten',35,8],['karotte',35,8],
+  ['möhre',35,8],['mohrrübe',35,8],['karotte',35,8],
   ['bruschetta',85,12],['oliven',115,6],
   ['garnelen',85,1],['lachs',180,0],
   // Würstchen
@@ -511,6 +511,9 @@ function parse(raw) {
   // Wandelt häufige Pluralformen in Singular um für besseres Matching
   function normalizePlural(t) {
     return t
+      .replace(/mohrrüben/gi, 'mohrrübe')
+      .replace(/möhren/gi, 'möhre')
+      .replace(/karotten/gi, 'karotte')
       .replace(/bratwürste/gi, 'bratwurst')
       .replace(/würstchen/gi, 'würstchen')
       .replace(/wiener\s+würstchen/gi, 'wiener würstchen')
@@ -553,6 +556,9 @@ function parse(raw) {
 
   function extractAmount(text) {
     const t = text.trim().toLowerCase();
+    // Gramm-Angaben: 120g Spaghetti oder Spaghetti 200g → Multiplikator relativ zu 100g
+    const gramM = t.match(/(\d+(?:[,.]\d+)?)\s*g\b/i);
+    if (gramM) return parseFloat(gramM[1].replace(',','.')) / 100;
     // Bruch-Symbole am Anfang
     if (FRAC_MAP[t[0]]) return FRAC_MAP[t[0]];
     // Brüche ausgeschrieben
@@ -638,10 +644,20 @@ function parse(raw) {
   const SIZE_WORDS = /\b(groß|gross|große|grosser|großer|klein|kleine|kleiner|kleines|mini|xxl)\b/i;
 
   for (const [name, kcal, kh] of FOOD) {
-    const rx = name.includes(' ')
-      ? new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
-      : new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-    if (rx.test(loNorm)) {
+    // \b funktioniert nicht zuverlässig mit Umlauten und bestimmten Zeichen
+    // Manuelle Wortgrenzprüfung für alle Einträge
+    let matched = false;
+    if (name.includes(' ')) {
+      matched = loNorm.includes(name);
+    } else {
+      const idx = loNorm.indexOf(name);
+      if (idx >= 0) {
+        const before = idx === 0 || !/[a-zA-ZäöüßÄÖÜ]/.test(loNorm[idx-1]);
+        const after = idx + name.length >= loNorm.length || !/[a-zA-ZäöüßÄÖÜ]/.test(loNorm[idx+name.length]);
+        matched = before && after;
+      }
+    }
+    if (matched) {
       // Wenn der DB-Eintrag selbst ein Größenwort enthält, sizeMul nicht nochmal anwenden
       const effectiveSizeMul = SIZE_WORDS.test(name) ? 1 : sizeMul;
       const mul = manK ? 1 : amountMul * effectiveSizeMul;
@@ -1356,9 +1372,6 @@ function renderCharts() {
     }]
   });
 }
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
