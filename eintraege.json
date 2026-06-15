@@ -3358,5 +3358,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1781511221727,
+    "date": "14.06.2026",
+    "time": "09:00",
+    "label": "2 belegte Brötchen (500 kcal)",
+    "k": 500,
+    "kh": 38,
+    "min": 0,
+    "burned": 0
   }
 ]
