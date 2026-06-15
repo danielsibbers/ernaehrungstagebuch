@@ -3338,5 +3338,15 @@
     "kh": 15.5,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1781511170397,
+    "date": "14.06.2026",
+    "time": "21:00",
+    "label": "Brötchen mit Wiener Würstchen und Börekstange (500 kcal)",
+    "k": 500,
+    "kh": 38,
+    "min": 0,
+    "burned": 0
   }
 ]
