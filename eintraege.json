@@ -3488,5 +3488,15 @@
     "kh": 0,
     "min": 34,
     "burned": 255
+  },
+  {
+    "id": 1781733841924,
+    "date": "17.06.2026",
+    "time": "22:00",
+    "label": "Crepe mit Marmelade (300 kcal)",
+    "k": 300,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
