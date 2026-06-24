@@ -3688,5 +3688,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1782338515138,
+    "date": "24.06.2026",
+    "time": "19:00",
+    "label": "Spaghetti Carbonara (1000 kcal)",
+    "k": 1000,
+    "kh": 72,
+    "min": 0,
+    "burned": 0
   }
 ]
