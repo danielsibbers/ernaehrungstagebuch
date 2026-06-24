@@ -3858,5 +3858,15 @@
     "kh": 0,
     "min": 32,
     "burned": 240
+  },
+  {
+    "id": 1782339112578,
+    "date": "22.06.2026",
+    "time": "19:00",
+    "label": "Rosmarinkartoffeln mit Quark (600 kcal)",
+    "k": 600,
+    "kh": 4,
+    "min": 0,
+    "burned": 0
   }
 ]
