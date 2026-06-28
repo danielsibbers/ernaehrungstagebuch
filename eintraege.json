@@ -4108,5 +4108,15 @@
     "kh": 0,
     "min": 45,
     "burned": 423
+  },
+  {
+    "id": 1782683119491,
+    "date": "28.06.2026",
+    "time": "09:00",
+    "label": "Toast mit Salami / Marmelade (800 kcal)",
+    "k": 800,
+    "kh": 15,
+    "min": 0,
+    "burned": 0
   }
 ]
