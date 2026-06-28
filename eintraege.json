@@ -4118,5 +4118,15 @@
     "kh": 15,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1782683161613,
+    "date": "28.06.2026",
+    "time": "19:00",
+    "label": "Pizza Margherita (700 kcal)",
+    "k": 700,
+    "kh": 95,
+    "min": 0,
+    "burned": 0
   }
 ]
