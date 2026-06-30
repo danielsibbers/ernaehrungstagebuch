@@ -4308,5 +4308,15 @@
     "kh": 30,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1782851870252,
+    "date": "30.06.2026",
+    "time": "10:00",
+    "label": "½ Kardamon-Croissant (200 kcal)",
+    "k": 200,
+    "kh": 32,
+    "min": 0,
+    "burned": 0
   }
 ]
