@@ -4348,5 +4348,15 @@
     "kh": 0,
     "min": 34,
     "burned": 255
+  },
+  {
+    "id": 1782852089069,
+    "date": "27.06.2026",
+    "time": "22:41",
+    "label": "4 Scheiben Toast mit Aufschnitt 700 kcal",
+    "k": 700,
+    "kh": 15,
+    "min": 0,
+    "burned": 0
   }
 ]
