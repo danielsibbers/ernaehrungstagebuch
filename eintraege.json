@@ -4438,5 +4438,15 @@
     "kh": 45,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1782852548583,
+    "date": "26.06.2026",
+    "time": "12:00",
+    "label": "Shawarma-Sandwich (600 Kcal)",
+    "k": 600,
+    "kh": 50,
+    "min": 0,
+    "burned": 0
   }
 ]
