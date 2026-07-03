@@ -4638,5 +4638,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1783107747228,
+    "date": "03.07.2026",
+    "time": "18:00",
+    "label": "Salat und Gemüse (250 kcal)",
+    "k": 250,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
   }
 ]
