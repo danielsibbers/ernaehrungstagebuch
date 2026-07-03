@@ -4628,5 +4628,15 @@
     "kh": 2,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1783107733183,
+    "date": "03.07.2026",
+    "time": "18:00",
+    "label": "Kaviarbrot mit Butter (300 kcal)",
+    "k": 300,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
