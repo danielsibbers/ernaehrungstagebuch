@@ -4688,5 +4688,15 @@
     "kh": 0,
     "min": 16,
     "burned": 120
+  },
+  {
+    "id": 1783108233650,
+    "date": "03.07.2026",
+    "time": "12:30",
+    "label": "Steinbeisser & Kartoffelsalat (700 kcal)",
+    "k": 250,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
