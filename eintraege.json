@@ -4830,26 +4830,6 @@
     "burned": 0
   },
   {
-    "id": 1783275594978,
-    "date": "09.07.2026",
-    "time": "08:30",
-    "label": "Fahrrad 8km",
-    "k": 0,
-    "kh": 0,
-    "min": 32,
-    "burned": 240
-  },
-  {
-    "id": 1783275603486,
-    "date": "09.07.2026",
-    "time": "12:00",
-    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
-    "k": 380,
-    "kh": 45,
-    "min": 0,
-    "burned": 0
-  },
-  {
     "id": 1783275606914,
     "date": "09.07.2026",
     "time": "15:00",
