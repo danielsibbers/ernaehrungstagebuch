@@ -4948,5 +4948,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1783372130944,
+    "date": "06.07.2026",
+    "time": "19:00",
+    "label": "Flammkuchen & Salat (900 kcal)",
+    "k": 900,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
   }
 ]
