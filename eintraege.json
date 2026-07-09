@@ -5130,33 +5130,13 @@
     "burned": 0
   },
   {
-    "id": 1783633003420,
+    "id": 1783633339131,
     "date": "09.07.2026",
-    "time": "23:36",
-    "label": "Laufen 26.000 Schritte",
+    "time": "23:42",
+    "label": "Laufen 15km",
     "k": 0,
     "kh": 0,
-    "min": 0,
-    "burned": 0
-  },
-  {
-    "id": 1783633282229,
-    "date": "09.07.2026",
-    "time": "23:41",
-    "label": "Sport Gehen 15 km",
-    "k": 0,
-    "kh": 0,
-    "min": 0,
-    "burned": 0
-  },
-  {
-    "id": 1783633308983,
-    "date": "09.07.2026",
-    "time": "23:41",
-    "label": "Gehen 15km",
-    "k": 0,
-    "kh": 0,
-    "min": 0,
-    "burned": 0
+    "min": 90,
+    "burned": 1095
   }
 ]
