@@ -5678,5 +5678,15 @@
     "kh": 22,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1784795206721,
+    "date": "19.07.2026",
+    "time": "08:30",
+    "label": "Brot mit Aufschnitt (600 kcal)",
+    "k": 600,
+    "kh": 22,
+    "min": 0,
+    "burned": 0
   }
 ]
