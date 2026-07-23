@@ -5688,5 +5688,15 @@
     "kh": 22,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1784795221702,
+    "date": "19.07.2026",
+    "time": "13:00",
+    "label": "Kekse Holmenkollen (250 kcal)",
+    "k": 250,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
