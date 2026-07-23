@@ -5698,5 +5698,15 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1784795414461,
+    "date": "18.07.2026",
+    "time": "10:00",
+    "label": "Brot und Aufschnitt (700 kcal)",
+    "k": 700,
+    "kh": 22,
+    "min": 0,
+    "burned": 0
   }
 ]
