@@ -5928,5 +5928,25 @@
     "kh": 0,
     "min": 0,
     "burned": 0
+  },
+  {
+    "id": 1785511152874,
+    "date": "25.07.2026",
+    "time": "15:30",
+    "label": "Wrap (600 kcal)",
+    "k": 600,
+    "kh": 60,
+    "min": 0,
+    "burned": 0
+  },
+  {
+    "id": 1785511209122,
+    "date": "24.07.2026",
+    "time": "08:30",
+    "label": "Standardmüsli (60g Haferflocken, 10g Nüsse, 150ml Milch)",
+    "k": 380,
+    "kh": 45,
+    "min": 0,
+    "burned": 0
   }
 ]
