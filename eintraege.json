@@ -6018,5 +6018,15 @@
     "kh": 0,
     "min": 30,
     "burned": 240
+  },
+  {
+    "id": 1785957190030,
+    "date": "05.08.2026",
+    "time": "16:30",
+    "label": "Alkoholfreies Bier 0,3",
+    "k": 60,
+    "kh": 13.5,
+    "min": 0,
+    "burned": 0
   }
 ]
