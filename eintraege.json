@@ -6138,5 +6138,15 @@
     "kh": 0,
     "min": 30,
     "burned": 240
+  },
+  {
+    "id": 1785957593212,
+    "date": "03.08.2026",
+    "time": "13:00",
+    "label": "Indisch Annapurna (800 Kcal)",
+    "k": 800,
+    "kh": 65,
+    "min": 0,
+    "burned": 0
   }
 ]
