@@ -6488,5 +6488,15 @@
     "kh": 0,
     "min": 32,
     "burned": 240
+  },
+  {
+    "id": 1794899392683,
+    "date": "16.11.2026",
+    "time": "19:30",
+    "label": "Griechische Grillplatte (1400 kcal)",
+    "k": 1400,
+    "kh": 0,
+    "min": 0,
+    "burned": 0
   }
 ]
