@@ -6638,5 +6638,15 @@
     "kh": 0,
     "min": 30,
     "burned": 240
+  },
+  {
+    "id": 1795128196714,
+    "date": "17.11.2026",
+    "time": "13:30",
+    "label": "Salat mit Schafskäse (450 kcal)",
+    "k": 450,
+    "kh": 18,
+    "min": 0,
+    "burned": 0
   }
 ]
